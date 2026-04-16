@@ -6,9 +6,9 @@ import ProjectCard from "@/components/ProjectCard.astro";
 const projects = (await getCollection("projects", ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
-<BaseLayout title="Projects — Yuanjia (Scott) Yang">
-  <h1 class="text-3xl font-bold tracking-tight">Projects</h1>
-  <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Side projects and tools I've built.</p>
+<BaseLayout title="Vibes — Yuanjia (Scott) Yang">
+  <h1 class="text-3xl font-bold tracking-tight">Vibes</h1>
+  <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Side projects and tools I've vibe coded.</p>
 
   <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
     {projects.map((project) => (

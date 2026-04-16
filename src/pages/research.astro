@@ -13,10 +13,38 @@ const talks = (await getCollection("talks", ({ data }) => !data.draft))
 
 const researchCode = await getCollection("research-code");
 ---
-<BaseLayout title="Research — Yuanjia (Scott) Yang">
-  <h1 class="text-3xl font-bold tracking-tight">Research</h1>
+<BaseLayout title="Research Projects — Yuanjia (Scott) Yang">
+  <h1 class="text-3xl font-bold tracking-tight">Research Projects</h1>
 
+  <!-- Research Code — visual cards first -->
   <section class="mt-10">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Active Projects</h2>
+    <div class="mt-4 grid gap-4 sm:grid-cols-2">
+      {researchCode.map((rc) => (
+        <a href={rc.data.repo} target="_blank" rel="noopener noreferrer"
+          class="group block overflow-hidden rounded-lg border border-zinc-200 transition-all hover:border-accent hover:shadow-lg dark:border-zinc-800 dark:hover:border-accent">
+          <div class="aspect-[16/9] bg-gradient-to-br from-accent/20 via-zinc-100 to-zinc-50 dark:from-accent/10 dark:via-zinc-800 dark:to-zinc-900 flex items-center justify-center">
+            <span class="text-2xl font-bold text-accent/40 dark:text-accent/30">{rc.data.title}</span>
+          </div>
+          <div class="p-4">
+            <p class="text-sm font-semibold text-zinc-900 group-hover:text-accent dark:text-zinc-100">{rc.data.title}</p>
+            <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2">{rc.data.blurb}</p>
+            <div class="mt-2 flex items-center justify-between">
+              <p class="text-xs text-zinc-400 dark:text-zinc-500">{rc.data.org}</p>
+              <div class="flex gap-1">
+                {rc.data.tags.map((tag: string) => (
+                  <span class="rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">{tag}</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Publications -->
+  <section class="mt-14">
     <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Publications</h2>
     {years.map((year) => (
       <div class="mt-6">
@@ -38,6 +66,7 @@ const researchCode = await getCollection("research-code");
     ))}
   </section>
 
+  <!-- Talks -->
   <section class="mt-14">
     <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Talks & Posters</h2>
     <div class="mt-4">
@@ -50,20 +79,6 @@ const researchCode = await getCollection("research-code");
           poster={talk.data.poster}
           slides={talk.data.slides}
         />
-      ))}
-    </div>
-  </section>
-
-  <section class="mt-14">
-    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Research Code</h2>
-    <div class="mt-4 grid gap-3 sm:grid-cols-2">
-      {researchCode.map((rc) => (
-        <a href={rc.data.repo} target="_blank" rel="noopener noreferrer"
-          class="group block rounded-lg border border-zinc-200 p-4 transition-all hover:border-accent dark:border-zinc-800 dark:hover:border-accent">
-          <p class="text-sm font-semibold text-zinc-900 group-hover:text-accent dark:text-zinc-100 transition-colors">{rc.data.title}</p>
-          <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{rc.data.blurb}</p>
-          <p class="mt-2 text-xs text-zinc-400 dark:text-zinc-500">{rc.data.org}</p>
-        </a>
       ))}
     </div>
   </section>

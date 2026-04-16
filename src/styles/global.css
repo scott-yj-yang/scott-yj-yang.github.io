@@ -10,3 +10,15 @@
   --color-accent-light: #c4b5fd;
   --color-accent-dark: #7c3aed;
 }
+
+* {
+  transition-property: background-color, color, border-color, opacity;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0ms !important;
+  }
+}

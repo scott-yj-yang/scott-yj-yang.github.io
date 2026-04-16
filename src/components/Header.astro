@@ -2,8 +2,8 @@
 import ThemeToggle from "./ThemeToggle.astro";
 
 const navItems = [
-  { label: "research", href: "/research" },
-  { label: "projects", href: "/projects" },
+  { label: "research projects", href: "/research" },
+  { label: "vibes", href: "/projects" },
   { label: "writing", href: "/writing" },
   { label: "now", href: "/now" },
   { label: "cv", href: "/cv" },
@@ -62,7 +62,16 @@ const currentPath = Astro.url.pathname;
 </header>
 
 <script is:inline>
-  document.getElementById("menu-toggle").addEventListener("click", function() {
-    document.getElementById("mobile-menu").classList.toggle("hidden");
-  });
+  if (!window.__menuDelegated) {
+    window.__menuDelegated = true;
+    document.addEventListener("click", function(e) {
+      if (e.target.closest("#menu-toggle")) {
+        document.getElementById("mobile-menu").classList.toggle("hidden");
+      }
+    });
+    document.addEventListener("astro:page-load", function() {
+      var menu = document.getElementById("mobile-menu");
+      if (menu) menu.classList.add("hidden");
+    });
+  }
 </script>
