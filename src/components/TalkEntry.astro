@@ -1,0 +1,31 @@
+---
+interface Props {
+  title: string;
+  venue: string;
+  date: Date;
+  kind: string;
+  poster?: string;
+  slides?: string;
+}
+
+const { title, venue, date, kind, poster, slides } = Astro.props;
+const year = date.getFullYear();
+const month = date.toLocaleString("en-US", { month: "short" });
+---
+<div class="flex gap-4 py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-b-0">
+  <div class="w-20 shrink-0 text-sm tabular-nums text-zinc-400 dark:text-zinc-500">
+    {month} {year}
+  </div>
+  <div>
+    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100">{title}</p>
+    <p class="text-sm text-zinc-500 dark:text-zinc-400">
+      {venue} · <span class="capitalize">{kind}</span>
+    </p>
+    {(poster || slides) && (
+      <div class="mt-1 flex gap-2">
+        {poster && <a href={poster} target="_blank" rel="noopener noreferrer" class="text-xs text-accent hover:underline">Poster</a>}
+        {slides && <a href={slides} target="_blank" rel="noopener noreferrer" class="text-xs text-accent hover:underline">Slides</a>}
+      </div>
+    )}
+  </div>
+</div>

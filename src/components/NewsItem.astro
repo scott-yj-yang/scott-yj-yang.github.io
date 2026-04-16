@@ -1,0 +1,24 @@
+---
+interface Props {
+  date: Date;
+  kind: string;
+}
+
+const { date, kind } = Astro.props;
+const formatted = date.toLocaleString("en-US", { month: "short", year: "numeric" });
+
+const kindColors: Record<string, string> = {
+  paper: "bg-emerald-400",
+  talk: "bg-blue-400",
+  post: "bg-accent",
+  misc: "bg-zinc-400",
+};
+const dotColor = kindColors[kind] || kindColors.misc;
+---
+<div class="flex gap-3 py-2 border-b border-zinc-50 dark:border-zinc-800/50 last:border-b-0">
+  <div class="w-20 shrink-0 text-sm tabular-nums text-zinc-400 dark:text-zinc-500">{formatted}</div>
+  <div class="flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+    <span class:list={["mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full", dotColor]}></span>
+    <span><slot /></span>
+  </div>
+</div>

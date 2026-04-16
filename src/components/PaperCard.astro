@@ -1,0 +1,46 @@
+---
+interface Props {
+  title: string;
+  authors: { name: string; isSelf: boolean; isCoFirst: boolean }[];
+  venue: string;
+  year: number;
+  status: string;
+  pdf?: string;
+  code?: string;
+  demo?: string;
+  arxiv?: string;
+}
+
+const { title, authors, venue, year, status, pdf, code, demo, arxiv } = Astro.props;
+
+function formatAuthors(authors: Props["authors"]) {
+  return authors.map((a) => {
+    let text = a.name;
+    if (a.isCoFirst) text += "*";
+    return { text, isSelf: a.isSelf };
+  });
+}
+
+const formatted = formatAuthors(authors);
+---
+<div class="py-4 border-b border-zinc-100 dark:border-zinc-800 last:border-b-0">
+  <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">{title}</h3>
+  <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+    {formatted.map((a, i) => (
+      <>
+        {i > 0 && ", "}
+        {a.isSelf ? <strong class="text-zinc-900 dark:text-zinc-100">{a.text}</strong> : <span>{a.text}</span>}
+      </>
+    ))}
+  </p>
+  <p class="mt-1 text-sm text-zinc-400 dark:text-zinc-500">
+    {venue} · {year}
+    {status === "under-review" && <span class="ml-2 italic text-accent">Under Review</span>}
+  </p>
+  <div class="mt-2 flex flex-wrap gap-2">
+    {demo && <a href={demo} target="_blank" rel="noopener noreferrer" class="inline-flex items-center rounded-md bg-accent px-3 py-1 text-xs font-medium text-white hover:bg-accent-dark transition-colors">Live demo →</a>}
+    {pdf && <a href={pdf} target="_blank" rel="noopener noreferrer" class="inline-flex items-center rounded-md border border-zinc-200 px-3 py-1 text-xs text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 transition-colors">PDF</a>}
+    {code && <a href={code} target="_blank" rel="noopener noreferrer" class="inline-flex items-center rounded-md border border-zinc-200 px-3 py-1 text-xs text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 transition-colors">Code</a>}
+    {arxiv && <a href={arxiv} target="_blank" rel="noopener noreferrer" class="inline-flex items-center rounded-md border border-zinc-200 px-3 py-1 text-xs text-zinc-600 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 transition-colors">arXiv</a>}
+  </div>
+</div>
