@@ -9,9 +9,10 @@ interface Props {
   code?: string;
   demo?: string;
   arxiv?: string;
+  href?: string;
 }
 
-const { title, authors, venue, year, status, pdf, code, demo, arxiv } = Astro.props;
+const { title, authors, venue, year, status, pdf, code, demo, arxiv, href } = Astro.props;
 
 function formatAuthors(authors: Props["authors"]) {
   return authors.map((a) => {
@@ -24,7 +25,11 @@ function formatAuthors(authors: Props["authors"]) {
 const formatted = formatAuthors(authors);
 ---
 <div class="py-4 border-b border-zinc-100 dark:border-zinc-800 last:border-b-0">
-  <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">{title}</h3>
+  {href ? (
+    <h3><a href={href} class="text-base font-semibold text-zinc-900 hover:text-accent dark:text-zinc-100">{title}</a></h3>
+  ) : (
+    <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100">{title}</h3>
+  )}
   <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
     {formatted.map((a, i) => (
       <>

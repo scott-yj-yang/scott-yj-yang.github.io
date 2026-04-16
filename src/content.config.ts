@@ -61,8 +61,12 @@ const researchCode = defineCollection({
     title: z.string(),
     blurb: z.string(),
     repo: z.string(),
+    demo: z.string().optional(),
+    arxiv: z.string().optional(),
     tags: z.array(z.string()).default([]),
     org: z.string(),
+    order: z.number().default(99),
+    draft: z.boolean().default(false),
   }),
 });
 

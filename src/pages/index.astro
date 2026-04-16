@@ -40,8 +40,11 @@ const chips = ["neuroAI", "motor control", "biomechanics", "deep RL", "virtual r
         {chips.map((c) => <Chip label={c} />)}
       </div>
     </div>
-    <div class="group shrink-0">
-      <div class="rounded-full p-1 transition-all duration-500 group-hover:bg-gradient-to-b group-hover:from-[#5BCEFA] group-hover:via-[#F5A9B8] group-hover:to-white">
+    <div class="group relative shrink-0">
+      <div class="hero-ring hero-ring-outer rounded-full absolute inset-0 opacity-0 group-hover:opacity-100" />
+      <div class="hero-ring hero-ring-mid rounded-full absolute inset-0 opacity-0 group-hover:opacity-100" />
+      <div class="hero-ring hero-ring-inner rounded-full absolute inset-0 opacity-0 group-hover:opacity-100" />
+      <div class="relative rounded-full p-1">
         <Image
           src={heroImage}
           alt="Yuanjia (Scott) Yang"
@@ -59,22 +62,26 @@ const chips = ["neuroAI", "motor control", "biomechanics", "deep RL", "virtual r
   <section class="mt-16">
     <div class="flex items-baseline justify-between">
       <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Selected Work</h2>
-      <a href="/research" class="text-xs text-accent hover:underline">All publications →</a>
+      <a href="/research" class="text-xs text-accent hover:underline">All research projects →</a>
     </div>
     <div class="mt-4">
-      {selectedPapers.map((paper) => (
-        <PaperCard
-          title={paper.data.title}
-          authors={paper.data.authors}
-          venue={paper.data.venue}
-          year={paper.data.year}
-          status={paper.data.status}
-          pdf={paper.data.pdf}
-          code={paper.data.code}
-          demo={paper.data.demo}
-          arxiv={paper.data.arxiv}
-        />
-      ))}
+      {selectedPapers.map((paper) => {
+        const projectSlug = paper.id === "mimic-mjx" ? "/research/mimic-mjx" : undefined;
+        return (
+          <PaperCard
+            title={paper.data.title}
+            authors={paper.data.authors}
+            venue={paper.data.venue}
+            year={paper.data.year}
+            status={paper.data.status}
+            pdf={paper.data.pdf}
+            code={paper.data.code}
+            demo={paper.data.demo}
+            arxiv={paper.data.arxiv}
+            href={projectSlug}
+          />
+        );
+      })}
     </div>
   </section>
 
