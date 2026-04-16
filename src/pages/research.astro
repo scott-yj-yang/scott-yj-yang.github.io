@@ -1,0 +1,70 @@
+---
+import { getCollection } from "astro:content";
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import PaperCard from "@/components/PaperCard.astro";
+import TalkEntry from "@/components/TalkEntry.astro";
+
+const allPapers = await getCollection("papers", ({ data }) => !data.draft);
+const papersByYear = allPapers.sort((a, b) => b.data.year - a.data.year || (b.data.month ?? 0) - (a.data.month ?? 0));
+const years = [...new Set(papersByYear.map((p) => p.data.year))];
+
+const talks = (await getCollection("talks", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const researchCode = await getCollection("research-code");
+---
+<BaseLayout title="Research — Yuanjia (Scott) Yang">
+  <h1 class="text-3xl font-bold tracking-tight">Research</h1>
+
+  <section class="mt-10">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Publications</h2>
+    {years.map((year) => (
+      <div class="mt-6">
+        <h3 class="text-sm font-medium text-zinc-300 dark:text-zinc-600">{year}</h3>
+        {papersByYear.filter((p) => p.data.year === year).map((paper) => (
+          <PaperCard
+            title={paper.data.title}
+            authors={paper.data.authors}
+            venue={paper.data.venue}
+            year={paper.data.year}
+            status={paper.data.status}
+            pdf={paper.data.pdf}
+            code={paper.data.code}
+            demo={paper.data.demo}
+            arxiv={paper.data.arxiv}
+          />
+        ))}
+      </div>
+    ))}
+  </section>
+
+  <section class="mt-14">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Talks & Posters</h2>
+    <div class="mt-4">
+      {talks.map((talk) => (
+        <TalkEntry
+          title={talk.data.title}
+          venue={talk.data.venue}
+          date={talk.data.date}
+          kind={talk.data.kind}
+          poster={talk.data.poster}
+          slides={talk.data.slides}
+        />
+      ))}
+    </div>
+  </section>
+
+  <section class="mt-14">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Research Code</h2>
+    <div class="mt-4 grid gap-3 sm:grid-cols-2">
+      {researchCode.map((rc) => (
+        <a href={rc.data.repo} target="_blank" rel="noopener noreferrer"
+          class="group block rounded-lg border border-zinc-200 p-4 transition-all hover:border-accent dark:border-zinc-800 dark:hover:border-accent">
+          <p class="text-sm font-semibold text-zinc-900 group-hover:text-accent dark:text-zinc-100 transition-colors">{rc.data.title}</p>
+          <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{rc.data.blurb}</p>
+          <p class="mt-2 text-xs text-zinc-400 dark:text-zinc-500">{rc.data.org}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
