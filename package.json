@@ -1,0 +1,22 @@
+{
+  "name": "scott-yj-yang.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.33.0",
+  "dependencies": {
+    "astro": "^6.1.7"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2"
+  }
+}
