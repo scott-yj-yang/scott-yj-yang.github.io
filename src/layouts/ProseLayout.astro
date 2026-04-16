@@ -1,0 +1,14 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+<BaseLayout title={`${title} — Yuanjia (Scott) Yang`}>
+  <article class="prose prose-zinc max-w-none dark:prose-invert">
+    <slot />
+  </article>
+</BaseLayout>

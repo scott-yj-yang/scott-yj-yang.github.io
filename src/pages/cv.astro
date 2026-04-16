@@ -1,0 +1,90 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+---
+<BaseLayout title="CV — Yuanjia (Scott) Yang">
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-bold tracking-tight">Curriculum Vitae</h1>
+    <a href="/cv/Yuanjia-Scott-Yang-CV.pdf" target="_blank" rel="noopener noreferrer"
+      class="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white hover:bg-accent-dark transition-colors">
+      Download PDF ↓
+    </a>
+  </div>
+
+  <section class="mt-10">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Education</h2>
+    <div class="mt-4 space-y-6">
+      <div>
+        <div class="flex items-baseline justify-between">
+          <h3 class="font-semibold">Ph.D. in Neuroscience</h3>
+          <span class="text-sm text-zinc-400">Sept 2025 – Present</span>
+        </div>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">UC San Diego · Talmo Pereira Lab, Salk Institute for Biological Studies</p>
+        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Focus: Computational Neuroscience, Neuromechanical Modeling, Deep RL</p>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">Funding: NIH BRAIN U01 (1U01NS136507)</p>
+      </div>
+      <div>
+        <div class="flex items-baseline justify-between">
+          <h3 class="font-semibold">M.S. in Computer Science and Engineering — AI</h3>
+          <span class="text-sm text-zinc-400">Sept 2023 – Mar 2025</span>
+        </div>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">UC San Diego</p>
+        <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Thesis: VNL-Ray: Biomechanically Realistic Virtual Rodent Behavior and Task Learning via Deep RL</p>
+      </div>
+      <div>
+        <div class="flex items-baseline justify-between">
+          <h3 class="font-semibold">B.S. in Data Science & Cognitive Science</h3>
+          <span class="text-sm text-zinc-400">Sept 2019 – Mar 2023</span>
+        </div>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">UC San Diego · GPA: 3.94/4 · Magna Cum Laude · Provost's Honor</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-10">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Technical Skills</h2>
+    <div class="mt-4 space-y-2 text-sm text-zinc-600 dark:text-zinc-400">
+      <p><strong class="text-zinc-900 dark:text-zinc-100">Programming:</strong> Python, JAX, JavaScript, R, MATLAB, Java, SQL, LaTeX</p>
+      <p><strong class="text-zinc-900 dark:text-zinc-100">ML/RL:</strong> TensorFlow, PyTorch, Stable-Baselines3, Brax</p>
+      <p><strong class="text-zinc-900 dark:text-zinc-100">Simulation:</strong> MuJoCo, MuJoCo-MJX, STAC-MJX</p>
+      <p><strong class="text-zinc-900 dark:text-zinc-100">Infrastructure:</strong> Ray, GPU/TPU computing, Docker, Git</p>
+      <p><strong class="text-zinc-900 dark:text-zinc-100">Data:</strong> NumPy, SciPy, Pandas, Matplotlib, Scikit-learn</p>
+    </div>
+  </section>
+
+  <section class="mt-10">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Teaching</h2>
+    <div class="mt-4">
+      <p class="text-sm text-zinc-500 dark:text-zinc-400">Teaching Assistant — UC San Diego</p>
+      <ul class="mt-2 space-y-1 text-sm text-zinc-600 dark:text-zinc-400">
+        <li>COGS 188 — Reinforcement Learning (Sp24)</li>
+        <li>COGS 118B — Unsupervised Machine Learning (Wi23)</li>
+        <li>COGS 118A — Supervised Machine Learning (Sp23, Wi23, Sp22)</li>
+        <li>COGS 108 — Data Science in Practice (Fa24, Fa23, Sp23, Wi22)</li>
+        <li>DSC 30 — Data Structures & Algorithms (Wi22, Fa21, Su21, Sp21)</li>
+        <li>COGS 18 — Introduction to Python (Wi21)</li>
+        <li>DSC 10 — Principles of Data Science (Su21)</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="mt-10">
+    <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Honors & Awards</h2>
+    <div class="mt-4 space-y-3">
+      <div class="flex items-baseline justify-between">
+        <p class="text-sm font-medium">Magna Cum Laude</p>
+        <span class="text-sm text-zinc-400">Mar 2023</span>
+      </div>
+      <div class="flex items-baseline justify-between">
+        <div>
+          <p class="text-sm font-medium">UC Scholars</p>
+          <p class="text-xs text-zinc-500 dark:text-zinc-400">Summer Research Scholarship</p>
+        </div>
+        <span class="text-sm text-zinc-400">Summer 2022</span>
+      </div>
+    </div>
+  </section>
+
+  <p class="mt-12 text-center text-sm text-zinc-400 dark:text-zinc-500">
+    Full details in the <a href="/cv/Yuanjia-Scott-Yang-CV.pdf" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">PDF version</a>.
+  </p>
+</BaseLayout>
