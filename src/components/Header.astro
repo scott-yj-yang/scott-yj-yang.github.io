@@ -16,7 +16,8 @@ const currentPath = Astro.url.pathname;
     <a href="/" class="text-sm font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
       yuanjia yang
     </a>
-    <nav class="flex items-center gap-6">
+    <!-- Desktop nav -->
+    <nav class="hidden items-center gap-6 sm:flex">
       {navItems.map((item) => (
         <a
           href={item.href}
@@ -32,5 +33,36 @@ const currentPath = Astro.url.pathname;
       ))}
       <ThemeToggle />
     </nav>
+    <!-- Mobile toggle -->
+    <div class="flex items-center gap-2 sm:hidden">
+      <ThemeToggle />
+      <button id="menu-toggle" aria-label="Toggle menu" class="p-2 text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+        </svg>
+      </button>
+    </div>
   </div>
+  <!-- Mobile menu -->
+  <nav id="mobile-menu" class="hidden border-t border-zinc-100 px-6 pb-4 dark:border-zinc-800 sm:hidden">
+    {navItems.map((item) => (
+      <a
+        href={item.href}
+        class:list={[
+          "block py-2 text-sm transition-colors",
+          currentPath.startsWith(item.href)
+            ? "text-accent font-medium"
+            : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100",
+        ]}
+      >
+        {item.label}
+      </a>
+    ))}
+  </nav>
 </header>
+
+<script is:inline>
+  document.getElementById("menu-toggle").addEventListener("click", function() {
+    document.getElementById("mobile-menu").classList.toggle("hidden");
+  });
+</script>
