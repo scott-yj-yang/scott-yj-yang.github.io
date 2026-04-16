@@ -18,6 +18,7 @@ const projects = (await getCollection("projects", ({ data }) => !data.draft))
         repo={project.data.repo}
         demo={project.data.demo}
         tags={project.data.tags}
+        slug={project.body?.trim() ? project.id : undefined}
       />
     ))}
   </div>

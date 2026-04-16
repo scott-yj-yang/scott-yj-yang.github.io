@@ -10,21 +10,23 @@
 </button>
 
 <script is:inline>
-  (function() {
+  if (!window.__themeToggleInit) {
+    window.__themeToggleInit = true;
+
     function updateAllIcons() {
-      const isDark = document.documentElement.classList.contains("dark");
-      document.querySelectorAll("[data-icon='sun']").forEach(el => el.classList.toggle("hidden", !isDark));
-      document.querySelectorAll("[data-icon='moon']").forEach(el => el.classList.toggle("hidden", isDark));
+      var isDark = document.documentElement.classList.contains("dark");
+      document.querySelectorAll("[data-icon='sun']").forEach(function(el) { el.classList.toggle("hidden", !isDark); });
+      document.querySelectorAll("[data-icon='moon']").forEach(function(el) { el.classList.toggle("hidden", isDark); });
     }
 
     updateAllIcons();
 
-    document.querySelectorAll("[data-theme-toggle]").forEach(btn => {
+    document.querySelectorAll("[data-theme-toggle]").forEach(function(btn) {
       btn.addEventListener("click", function() {
-        const isDark = document.documentElement.classList.toggle("dark");
+        var isDark = document.documentElement.classList.toggle("dark");
         localStorage.setItem("theme", isDark ? "dark" : "light");
         updateAllIcons();
       });
     });
-  })();
+  }
 </script>
