@@ -1,6 +1,5 @@
 ---
 const links = [
-  { label: "email", href: "mailto:yuy004@ucsd.edu" },
   { label: "github", href: "https://github.com/scott-yj-yang" },
   { label: "scholar", href: "https://scholar.google.com/citations?user=bjZuYAwAAAAJ" },
   { label: "linkedin", href: "https://linkedin.com/in/scott-yang-aa03731b9" },
@@ -10,7 +9,8 @@ const links = [
   <div class="mx-auto max-w-3xl px-6 py-8 text-sm text-zinc-500 dark:text-zinc-400">
     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <p>&copy; {new Date().getFullYear()} Yuanjia Yang</p>
-      <div class="flex gap-4">
+      <div class="flex flex-wrap gap-4 items-center">
+        <span>yuy004 [at] ucsd [dot] edu</span>
         {links.map((link) => (
           <a
             href={link.href}
