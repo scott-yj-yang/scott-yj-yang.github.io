@@ -10,7 +10,8 @@
     "check": "astro check",
     "fetch-pubs": "npx tsx scripts/fetch-publications.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui"
   },
   "keywords": [],
   "author": "",
