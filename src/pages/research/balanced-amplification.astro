@@ -1,0 +1,123 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Fig1TwoPopulation from "@/components/balanced-amp/Fig1TwoPopulation";
+import Fig2HebbianVsBalanced from "@/components/balanced-amp/Fig2HebbianVsBalanced";
+import Fig3SpatialModes from "@/components/balanced-amp/Fig3SpatialModes";
+import Fig4SchurDecomposition from "@/components/balanced-amp/Fig4SchurDecomposition";
+---
+<BaseLayout
+  title="Balanced Amplification — an interactive walkthrough"
+  description="Interactive walkthrough of Murphy & Miller (2009), Balanced Amplification, for NeuroSci 200C."
+>
+  <a href="/research" class="text-sm text-accent hover:underline">← Research</a>
+  <h1 class="mt-4 text-3xl font-bold tracking-tight">Balanced amplification</h1>
+  <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
+    An interactive walkthrough of Murphy &amp; Miller (2009),
+    <em>Balanced Amplification: A New Mechanism of Selective Amplification of Neural Activity Patterns</em>,
+    <a href="https://doi.org/10.1016/j.neuron.2009.02.005" class="text-accent hover:underline" target="_blank" rel="noopener">Neuron 61, 635–648</a>.
+  </p>
+
+  <article class="prose prose-zinc mt-10 max-w-none dark:prose-invert">
+    <h2>The puzzle</h2>
+    <p>
+      Cortical networks have strong recurrent excitation, balanced by similarly strong feedback
+      inhibition. In cat V1, even <em>spontaneous</em> activity (no stimulus) contains structure
+      that resembles evoked orientation maps — about 2× larger in those directions than random
+      control patterns (Kenet et al., 2003). This implies the circuit selectively amplifies
+      some patterns more than others.
+    </p>
+    <p>
+      The classical story is <strong>Hebbian amplification</strong>: a pattern excites itself through
+      recurrent connections, slowing its decay and so accumulating to larger amplitude. But Hebbian
+      amplification couples amplitude tightly to timescale — the more you amplify, the more you slow
+      down. That is at odds with the ~80&nbsp;ms timescale observed in V1.
+    </p>
+    <p>
+      Murphy &amp; Miller introduce a different mechanism: <strong>balanced amplification</strong>.
+      The key insight is that biological connectivity matrices are <em>nonnormal</em> (because
+      individual neurons are either excitatory or inhibitory). Nonnormal matrices have non-orthogonal
+      eigenvectors, and that geometry hides a feedforward connection between difference patterns
+      (where E and I rates differ) and sum patterns (where they move together). Small imbalances
+      in E/I activity drive large balanced responses — without slowing.
+    </p>
+
+    <h2>Fig 1: the two-population case</h2>
+    <p>
+      The simplest case is two populations, one excitatory and one inhibitory, each projecting
+      to both. With a single recurrent strength <em>w</em> and an inhibition ratio <em>k<sub>I</sub></em>,
+      the dynamics decompose neatly in the sum/difference basis. The difference mode decays passively;
+      the sum mode receives feedforward drive from the difference mode with weight
+      <em>w<sub>FF</sub> = w(1 + k<sub>I</sub>)</em>. Try setting r<sub>E</sub>(0) = 1 and r<sub>I</sub>(0) = 0
+      — an "all-excitatory" perturbation — then watch how the sum (blue) transiently grows even as
+      the difference (black) decays.
+    </p>
+  </article>
+
+  <Fig1TwoPopulation client:load />
+
+  <article class="prose prose-zinc mt-6 max-w-none dark:prose-invert">
+    <h2>Fig 2: Hebbian vs. balanced</h2>
+    <p>
+      To see why balanced amplification matters, compare two networks tuned to the <em>same</em>
+      steady-state amplification. The Hebbian network is a single excitatory population with
+      self-strength <em>w</em>; its effective timescale is <em>τ/(1 − w)</em>, which diverges as
+      <em>w</em> approaches 1. The balanced network is the two-population circuit from Fig 1.
+    </p>
+    <p>
+      Use the preset selector to walk from 1× → 10× amplification. The Hebbian network slows down
+      dramatically. The balanced network barely changes its timecourse — only its height.
+    </p>
+  </article>
+
+  <Fig2HebbianVsBalanced client:load />
+
+  <article class="prose prose-zinc mt-6 max-w-none dark:prose-invert">
+    <h2>Fig 3: spatially extended networks</h2>
+    <p>
+      In a real cortex you don't have two lumped populations — you have thousands of neurons with
+      structured connectivity. In V1, intracortical connections depend on both distance and
+      orientation preference. With that structure, balanced amplification picks out
+      <em>specific spatial patterns</em>: those whose pattern of E/I difference best reproduces
+      itself through <em>W<sub>E</sub> + W<sub>I</sub></em>.
+    </p>
+    <p>
+      The top sum/difference mode pairs (the eigenvectors of <em>W<sub>E</sub> + W<sub>I</sub></em>
+      with the largest eigenvalues) are the most amplifiable patterns. In a network with V1-like
+      connectivity, modes 2 and 3 happen to look exactly like evoked orientation maps — which is
+      precisely what's observed in spontaneous V1 activity.
+    </p>
+  </article>
+
+  <Fig3SpatialModes client:load />
+
+  <article class="prose prose-zinc mt-6 max-w-none dark:prose-invert">
+    <h2>Fig 4: why the eigenvector picture deceives</h2>
+    <p>
+      All this is hidden if you only look at eigenvalues. The eigenvalues of the balanced matrix
+      can all have negative real part — yet the matrix transiently amplifies. The trick is that
+      the eigenvectors are non-orthogonal, so the "amplitude" of an eigenmode is not directly
+      observable as a firing rate. The orthonormal <strong>Schur basis</strong> makes the hidden
+      feedforward connectivity explicit: same eigenvalues on the diagonal, but with feedforward
+      weights above.
+    </p>
+  </article>
+
+  <Fig4SchurDecomposition client:load />
+
+  <article class="prose prose-zinc mt-6 max-w-none dark:prose-invert">
+    <h2>Take-aways</h2>
+    <ul>
+      <li>Strong recurrent excitation + strong feedback inhibition → nonnormal connectivity → hidden feedforward structure.</li>
+      <li>Small E/I imbalances ("difference patterns") drive large balanced responses ("sum patterns") — selective amplification without slowing.</li>
+      <li>Which patterns are amplified is controlled by the eigenvectors of <em>W<sub>E</sub> + W<sub>I</sub></em>, not eigenvalues.</li>
+      <li>This is likely ubiquitous in cortex and can quantitatively account for the spontaneous orientation-map structure observed in cat V1.</li>
+    </ul>
+
+    <h3>References</h3>
+    <ul>
+      <li>Murphy, B. K., &amp; Miller, K. D. (2009). Balanced amplification: A new mechanism of selective amplification of neural activity patterns. <em>Neuron</em>, 61(4), 635–648.</li>
+      <li>Kenet, T., Bibitchkov, D., Tsodyks, M., Grinvald, A., &amp; Arieli, A. (2003). Spontaneously emerging cortical representations of visual attributes. <em>Nature</em>, 425, 954–956.</li>
+      <li>Christodoulou, S., &amp; Vogels, T. (2022). The eigenvalue value (in neuroscience). [Companion reading for 200C.]</li>
+    </ul>
+  </article>
+</BaseLayout>
