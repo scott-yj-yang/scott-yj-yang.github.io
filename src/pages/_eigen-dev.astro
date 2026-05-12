@@ -1,0 +1,15 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import ComplexPlane from "@/components/eigen/plots/ComplexPlane";
+---
+<BaseLayout title="Eigen dev">
+  <h1 class="text-2xl font-bold mb-4">Eigen primitive harness (delete in Task 12)</h1>
+  <h2 class="text-lg mt-6 mb-2">ComplexPlane</h2>
+  <ComplexPlane
+    client:load
+    points={[
+      { re: -10, im: 0, color: "#7c3aed", draggable: true, id: "l1" },
+      { re: -2, im: 0, color: "#7c3aed", draggable: true, id: "l2" },
+    ]}
+  />
+</BaseLayout>
