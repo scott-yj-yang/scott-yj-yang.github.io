@@ -2,6 +2,7 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import ComplexPlane from "@/components/eigen/plots/ComplexPlane";
 import Trajectory from "@/components/eigen/plots/Trajectory";
+import VectorField from "@/components/eigen/plots/VectorField";
 import { integrate2x2 } from "@/components/eigen/math/integrate";
 
 const xs = integrate2x2([[-1, 0], [0, -2]], [1, 1], { dt: 0.05, steps: 200 });
@@ -29,4 +30,7 @@ const x2 = xs.map((p) => p[1]);
       { values: x2, color: "#a78bfa", label: "x2" },
     ]}
   />
+
+  <h2 class="text-lg mt-6 mb-2">VectorField</h2>
+  <VectorField client:load W={[[-1, 2], [-2, -1]]} x0={[1, 0]} />
 </BaseLayout>
