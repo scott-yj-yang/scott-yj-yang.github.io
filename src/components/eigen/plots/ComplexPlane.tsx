@@ -60,7 +60,9 @@ export default function ComplexPlane({
       onPointerLeave={() => setDraggingId(null)}
     >
       <line x1={PAD} y1={yScale(0)} x2={width - PAD} y2={yScale(0)} stroke="currentColor" strokeOpacity={0.2} />
-      <line x1={xScale(0)} y1={PAD} x2={xScale(0)} y2={height - PAD} stroke="currentColor" strokeOpacity={0.2} />
+      {!showStabilityLine && (
+        <line x1={xScale(0)} y1={PAD} x2={xScale(0)} y2={height - PAD} stroke="currentColor" strokeOpacity={0.2} />
+      )}
       {showStabilityLine && (
         <line
           x1={xScale(0)} y1={PAD} x2={xScale(0)} y2={height - PAD}
@@ -82,7 +84,7 @@ export default function ComplexPlane({
             style={{ cursor: p.draggable ? "grab" : "default" }}
             onPointerDown={(e) => {
               if (!p.draggable) return;
-              (e.target as Element).setPointerCapture(e.pointerId);
+              e.preventDefault();
               setDraggingId(id);
             }}
           />
