@@ -27,6 +27,17 @@ export function eig2x2(W: Matrix2x2): EigPair {
   };
 }
 
+/**
+ * Build a real 2x2 matrix from a desired eigenvalue pair plus an eigenvector skew angle θ.
+ *
+ * Conventions:
+ * - For `kind: "complex"`, `lambda1.im` is treated as the magnitude of the imaginary
+ *   part (the function uses `Math.abs(lambda1.im)`). Pass the conjugate pair with
+ *   `lambda1.im >= 0` and `lambda2 = conjugate(lambda1)`.
+ * - For `kind: "real"`, when `theta` lies near a multiple of π (so `sin(theta) ≈ 0`)
+ *   the V-basis becomes singular; in that case the function returns the canonical
+ *   diagonal form `diag(lambda1, lambda2)` rather than throwing.
+ */
 export function matrixFromEigenvalues(
   lambda1: Complex,
   lambda2: Complex,

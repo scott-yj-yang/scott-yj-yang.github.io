@@ -32,6 +32,16 @@ describe("eig2x2", () => {
     expect(close(e.lambda1.re, -1, 1e-9)).toBe(true);
     expect(close(Math.abs(e.lambda1.im), 3.4641, 1e-3)).toBe(true);
   });
+
+  it("repeated eigenvalue: disc = 0 returns kind=real with equal lambdas", () => {
+    const W: Matrix2x2 = [[2, 0], [0, 2]];
+    const e = eig2x2(W);
+    expect(e.kind).toBe("real");
+    expect(close(e.lambda1.re, 2)).toBe(true);
+    expect(close(e.lambda2.re, 2)).toBe(true);
+    expect(close(e.lambda1.im, 0)).toBe(true);
+    expect(close(e.lambda2.im, 0)).toBe(true);
+  });
 });
 
 describe("matrixFromEigenvalues", () => {
