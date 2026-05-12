@@ -52,13 +52,18 @@ function sigmaMin(zRe, zIm, M) {
   return Math.sqrt(min);
 }
 
-// Map log10(eps) in [-4, 1] to an RGB ramp from light pink (small eps) to dark red (large eps).
+// Discrete band colormap. Each band corresponds to an epsilon level
+// commonly used in pseudospectra plots. Inner bands (small eps, near
+// eigenvalues) are dark; outer bands (large eps) are light.
 function colorRamp(eps) {
-  const t = Math.max(0, Math.min(1, (Math.log10(eps + 1e-15) + 4) / 5));
-  const r = Math.round(255 - 100 * (1 - t));
-  const g = Math.round(120 * (1 - t));
-  const b = Math.round(120 * (1 - t));
-  return [r, g, b];
+  // bands: [threshold, R, G, B]
+  // thresholds chosen on a log scale; tune if visualisation looks flat.
+  if (eps < 0.01)  return [40,  0,  60];   // very dark purple
+  if (eps < 0.1)   return [100, 30, 100];  // dark purple
+  if (eps < 1)     return [180, 70, 130];  // magenta
+  if (eps < 5)     return [230, 130, 100]; // coral
+  if (eps < 20)    return [245, 200, 130]; // peach
+  return [250, 240, 220];                   // pale cream (background, large eps)
 }
 
 async function render(name, M) {
