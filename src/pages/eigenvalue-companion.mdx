@@ -1,0 +1,62 @@
+---
+layout: "@/layouts/BaseLayout.astro"
+title: "The Eigenvalue Value (in Neuroscience) — interactive companion"
+description: "Drag-and-explore companion to Christodoulou & Vogels (2022) for NEU200C."
+---
+
+import Fig2Demo from "@/components/eigen/Fig2Demo";
+import Fig3Demo from "@/components/eigen/Fig3Demo";
+import Fig4Demo from "@/components/eigen/Fig4Demo";
+import Fig5Demo from "@/components/eigen/Fig5Demo";
+
+# The Eigenvalue Value (in Neuroscience)
+
+An interactive walk-through of Christodoulou & Vogels (2022) for NEU200C. Each demo
+below mirrors a figure from the paper — drag the eigenvalues, sliders, and initial
+conditions to build intuition.
+
+> **Setup.** A linear neuronal network evolves as
+>
+> $$
+> \tau \frac{d\mathbf{x}(t)}{dt} = -\mathbf{x}(t) + \mathbf{W}\mathbf{x}(t) + \mathbf{I}(t).
+> $$
+>
+> We absorb the leak term, set $\tau=1$, and study $\dot{\mathbf{x}} = \mathbf{M}\mathbf{x}$ with
+> $\mathbf{M} = \mathbf{W} - \mathbf{I}$. The eigenvalues of $\mathbf{M}$ tell us almost
+> everything about how the network behaves — and the eigenvectors fill in what they hide.
+
+## Fig 2 — Toy 2-neuron systems
+
+Drag the two eigenvalues on the complex plane. The matrix $\mathbf{W}$ on the right,
+the trajectories $x_1(t), x_2(t)$ in the bottom-left, and the phase-plane vector field
+on the bottom-right all update live. Switch between **real** and **complex** eigenvalue
+modes, and use the preset buttons (A–D) to jump to the four panels in the paper.
+
+<Fig2Demo client:load />
+
+## Fig 3 — What the spectrum tells us
+
+Three lessons from the eigenspectrum alone (no eigenvector geometry yet): stability,
+timescales, and dominant directions.
+
+<Fig3Demo client:load />
+
+## Fig 4 — What the spectrum hides
+
+Same eigenvalues, very different transient behavior. Crank the **eigenvector skew**
+slider and watch the response norm $\|\mathbf{x}(t)\|$ spike before decaying — this is
+non-normality and transient amplification, invisible to the spectrum alone.
+
+<Fig4Demo client:load />
+
+## Fig 5 — Random matrix laws
+
+When the entries of $\mathbf{W}$ are drawn from a distribution, the spectrum has a
+predictable shape. Switch between IID Gaussian (Girko's circular law), symmetric
+(Wigner's semicircle), correlated (elliptic), and E/I networks (Dale's law).
+
+<Fig5Demo client:load />
+
+---
+
+**Reference:** Christodoulou, G., & Vogels, T. P. (2022). *The Eigenvalue Value (in Neuroscience).*
