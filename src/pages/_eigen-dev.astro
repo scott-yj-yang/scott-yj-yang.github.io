@@ -3,6 +3,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import ComplexPlane from "@/components/eigen/plots/ComplexPlane";
 import Trajectory from "@/components/eigen/plots/Trajectory";
 import VectorField from "@/components/eigen/plots/VectorField";
+import MatrixReadout from "@/components/eigen/plots/MatrixReadout";
 import { integrate2x2 } from "@/components/eigen/math/integrate";
 
 const xs = integrate2x2([[-1, 0], [0, -2]], [1, 1], { dt: 0.05, steps: 200 });
@@ -33,4 +34,11 @@ const x2 = xs.map((p) => p[1]);
 
   <h2 class="text-lg mt-6 mb-2">VectorField</h2>
   <VectorField client:load W={[[-1, 2], [-2, -1]]} x0={[1, 0]} />
+
+  <h2 class="text-lg mt-6 mb-2">MatrixReadout</h2>
+  <div class="flex gap-6 items-center">
+    <MatrixReadout client:load W={[[-10, 0], [0, -2]]} caption="W (Fig 2A)" />
+    <MatrixReadout client:load W={[[1, -8], [2, -3]]} highlight="off-diagonal" caption="W (Fig 2C, off-diag highlighted)" />
+    <MatrixReadout client:load W={[[1, -8], [2, -3]]} highlight="lower-tri" caption="lower-tri highlighted" />
+  </div>
 </BaseLayout>
