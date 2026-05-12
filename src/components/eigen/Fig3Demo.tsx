@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ComplexPlane from "./plots/ComplexPlane";
 import Trajectory from "./plots/Trajectory";
+import { encodeFig3, decodeFig3, readQuery, writeQuery } from "./math/urlState";
 
 function seededRng(seed: number) {
   let s = seed >>> 0;
@@ -26,8 +27,7 @@ function modeTrajectory(eigs: number[], dt: number, steps: number, seed: number)
   return ys;
 }
 
-function Panel3A() {
-  const [shift, setShift] = useState(-2);
+function Panel3A({ shift, setShift }: { shift: number; setShift: (v: number) => void }) {
   const eigs = useMemo(() => {
     const rng = seededRng(1);
     return Array.from({ length: 30 }, () => shift + (rng() - 0.5) * 2);
@@ -48,9 +48,7 @@ function Panel3A() {
   );
 }
 
-function Panel3B() {
-  const [mu1, setMu1] = useState(-3);
-  const [mu2, setMu2] = useState(-0.3);
+function Panel3B({ mu1, setMu1, mu2, setMu2 }: { mu1: number; setMu1: (v: number) => void; mu2: number; setMu2: (v: number) => void }) {
   const eigs = useMemo(() => {
     const rng = seededRng(2);
     return [
@@ -76,8 +74,7 @@ function Panel3B() {
   );
 }
 
-function Panel3C() {
-  const [outlier, setOutlier] = useState(-1);
+function Panel3C({ outlier, setOutlier }: { outlier: number; setOutlier: (v: number) => void }) {
   const eigs = useMemo(() => {
     const rng = seededRng(3);
     return [
@@ -101,12 +98,41 @@ function Panel3C() {
   );
 }
 
-export default function Fig3Demo() {
+function ShareButton() {
   return (
-    <div className="my-6 grid grid-cols-1 md:grid-cols-3 gap-3">
-      <Panel3A />
-      <Panel3B />
-      <Panel3C />
+    <button
+      type="button"
+      className="text-xs underline text-zinc-500"
+      onClick={() => navigator.clipboard.writeText(window.location.href)}
+    >
+      copy share link
+    </button>
+  );
+}
+
+export default function Fig3Demo() {
+  const [shift, setShift] = useState(-2);
+  const [mu1, setMu1] = useState(-3);
+  const [mu2, setMu2] = useState(-0.3);
+  const [outlier, setOutlier] = useState(-1);
+
+  useEffect(() => {
+    const u = decodeFig3(readQuery("fig3"));
+    if (u) { setShift(u.shift); setMu1(u.mu1); setMu2(u.mu2); setOutlier(u.outlier); }
+  }, []);
+
+  useEffect(() => {
+    writeQuery("fig3", encodeFig3({ shift, mu1, mu2, outlier }));
+  }, [shift, mu1, mu2, outlier]);
+
+  return (
+    <div>
+      <div className="my-6 grid grid-cols-1 md:grid-cols-3 gap-3">
+        <Panel3A shift={shift} setShift={setShift} />
+        <Panel3B mu1={mu1} setMu1={setMu1} mu2={mu2} setMu2={setMu2} />
+        <Panel3C outlier={outlier} setOutlier={setOutlier} />
+      </div>
+      <ShareButton />
     </div>
   );
 }

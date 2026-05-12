@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { create, all } from "mathjs";
 import ComplexPlane from "./plots/ComplexPlane";
 import { sample, type SampleSpec } from "./math/randomMatrix";
+import { encodeFig5, decodeFig5, readQuery, writeQuery } from "./math/urlState";
 
 const math = create(all);
 
@@ -38,6 +39,19 @@ export default function Fig5Demo() {
   const [animating, setAnimating] = useState(false);
   const [busy, setBusy] = useState(false);
   const [eigs, setEigs] = useState<{ re: number; im: number }[]>([]);
+
+  useEffect(() => {
+    const u = decodeFig5(readQuery("fig5"));
+    if (u) {
+      if (MODES.some((m) => m.id === u.mode)) setMode(u.mode as Mode);
+      setN(u.N);
+      setSeed(u.seed);
+    }
+  }, []);
+
+  useEffect(() => {
+    writeQuery("fig5", encodeFig5({ mode, N, seed }));
+  }, [mode, N, seed]);
 
   const spec: SampleSpec = useMemo(() => {
     if (mode === "iid") return { mode, N, sigma, seed };
@@ -111,7 +125,7 @@ export default function Fig5Demo() {
             <Slider label="σ_I" min={0.1} max={3} step={0.1} value={sigmaI} onChange={setSigmaI}/>
           </>
         )}
-        <div className="flex gap-2 mt-3">
+        <div className="flex gap-2 mt-3 flex-wrap items-center">
           <button className="px-2 py-1 rounded border border-zinc-300 text-xs" onClick={() => setSeed((s) => s + 1)}>
             Re-roll
           </button>
@@ -119,6 +133,10 @@ export default function Fig5Demo() {
             className={`px-2 py-1 rounded border text-xs ${animating ? "bg-accent text-white" : "border-zinc-300"}`}
             onClick={() => setAnimating((a) => !a)}>
             {animating ? "Stop" : "Animate"}
+          </button>
+          <button type="button" className="text-xs underline text-zinc-500 ml-2"
+            onClick={() => navigator.clipboard.writeText(window.location.href)}>
+            copy share link
           </button>
         </div>
       </div>

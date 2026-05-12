@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ComplexPlane from "./plots/ComplexPlane";
 import Trajectory from "./plots/Trajectory";
 import MatrixReadout from "./plots/MatrixReadout";
 import { matrixFromEigenvalues, schur2x2 } from "./math/eig2x2";
 import { integrate2x2 } from "./math/integrate";
+import { encodeFig4, decodeFig4, readQuery, writeQuery } from "./math/urlState";
 
 const PSEUDO = [
   { id: "matrix-a", label: "A · low non-normality", src: "/eigen/pseudospectra/matrix-a.png" },
@@ -11,8 +12,7 @@ const PSEUDO = [
   { id: "matrix-c", label: "C · high non-normality", src: "/eigen/pseudospectra/matrix-c.png" },
 ];
 
-function PanelTransient() {
-  const [theta, setTheta] = useState(0);
+function PanelTransient({ theta, setTheta }: { theta: number; setTheta: (v: number) => void }) {
   const lambda1 = { re: -1, im: 0 };
   const lambda2 = { re: -2, im: 0 };
   const W = useMemo(
@@ -71,8 +71,7 @@ function PanelSchur() {
   );
 }
 
-function PanelPseudo() {
-  const [pick, setPick] = useState(PSEUDO[1].id);
+function PanelPseudo({ pick, setPick }: { pick: string; setPick: (v: string) => void }) {
   const cur = PSEUDO.find((p) => p.id === pick)!;
   return (
     <div className="border border-zinc-200 dark:border-zinc-800 rounded p-3 not-prose mt-4">
@@ -93,12 +92,34 @@ function PanelPseudo() {
   );
 }
 
+function ShareButton() {
+  return (
+    <button type="button" className="text-xs underline text-zinc-500 mt-2"
+      onClick={() => navigator.clipboard.writeText(window.location.href)}>
+      copy share link
+    </button>
+  );
+}
+
 export default function Fig4Demo() {
+  const [theta, setTheta] = useState(0);
+  const [pseudo, setPseudo] = useState("matrix-b");
+
+  useEffect(() => {
+    const u = decodeFig4(readQuery("fig4"));
+    if (u) { setTheta(u.theta); setPseudo(u.pseudo); }
+  }, []);
+
+  useEffect(() => {
+    writeQuery("fig4", encodeFig4({ theta, pseudo }));
+  }, [theta, pseudo]);
+
   return (
     <div className="my-6">
-      <PanelTransient />
+      <PanelTransient theta={theta} setTheta={setTheta} />
       <PanelSchur />
-      <PanelPseudo />
+      <PanelPseudo pick={pseudo} setPick={setPseudo} />
+      <ShareButton />
     </div>
   );
 }
