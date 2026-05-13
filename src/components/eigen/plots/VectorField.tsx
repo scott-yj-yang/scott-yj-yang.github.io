@@ -1,4 +1,31 @@
 import { useRef, useState } from "react";
+
+function niceTicks(min: number, max: number, count: number): number[] {
+  const span = max - min;
+  if (span <= 0) return [min];
+  const rough = span / count;
+  const mag = Math.pow(10, Math.floor(Math.log10(rough)));
+  const norm = rough / mag;
+  let step: number;
+  if (norm < 1.5) step = mag;
+  else if (norm < 3) step = 2 * mag;
+  else if (norm < 7) step = 5 * mag;
+  else step = 10 * mag;
+  const start = Math.ceil(min / step) * step;
+  const ticks: number[] = [];
+  for (let v = start; v <= max + step * 1e-9; v += step) {
+    ticks.push(Math.abs(v) < step * 1e-9 ? 0 : v);
+  }
+  return ticks;
+}
+
+function fmtTick(v: number): string {
+  if (v === 0) return "0";
+  const abs = Math.abs(v);
+  if (abs >= 100) return v.toFixed(0);
+  if (abs >= 1) return v.toFixed(1).replace(/\.0$/, "");
+  return v.toFixed(2);
+}
 import type { Matrix2x2 } from "@/components/eigen/math/eig2x2";
 
 type Props = {
@@ -83,8 +110,22 @@ export default function VectorField({
           <path d="M0,0 L0,6 L6,3 z" fill="currentColor" opacity="0.55" />
         </marker>
       </defs>
+      <rect x={PAD} y={PAD} width={width - 2 * PAD} height={height - 2 * PAD}
+        fill="none" stroke="currentColor" strokeOpacity={0.25} />
       <line x1={PAD} y1={sy(0)} x2={width - PAD} y2={sy(0)} stroke="currentColor" strokeOpacity={0.2} />
       <line x1={sx(0)} y1={PAD} x2={sx(0)} y2={height - PAD} stroke="currentColor" strokeOpacity={0.2} />
+      {niceTicks(range[0], range[1], 5).map((v) => (
+        <g key={`xt-${v}`} transform={`translate(${sx(v)}, ${height - PAD})`}>
+          <line y1={0} y2={3} stroke="currentColor" strokeOpacity={0.4} />
+          <text y={13} fontSize={9} textAnchor="middle" fill="currentColor" opacity={0.55}>{fmtTick(v)}</text>
+        </g>
+      ))}
+      {niceTicks(range[0], range[1], 5).map((v) => (
+        <g key={`yt-${v}`} transform={`translate(${PAD}, ${sy(v)})`}>
+          <line x1={-3} x2={0} stroke="currentColor" strokeOpacity={0.4} />
+          <text x={-5} y={3} fontSize={9} textAnchor="end" fill="currentColor" opacity={0.55}>{fmtTick(v)}</text>
+        </g>
+      ))}
       {arrows}
       {trajPath && (
         <path d={trajPath} stroke="rgb(167,139,250)" strokeWidth={2} fill="none" />

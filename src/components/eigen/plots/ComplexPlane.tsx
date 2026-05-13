@@ -1,5 +1,32 @@
 import { useRef, useState, type PointerEvent } from "react";
 
+function niceTicks(min: number, max: number, count: number): number[] {
+  const span = max - min;
+  if (span <= 0) return [min];
+  const rough = span / count;
+  const mag = Math.pow(10, Math.floor(Math.log10(rough)));
+  const norm = rough / mag;
+  let step: number;
+  if (norm < 1.5) step = mag;
+  else if (norm < 3) step = 2 * mag;
+  else if (norm < 7) step = 5 * mag;
+  else step = 10 * mag;
+  const start = Math.ceil(min / step) * step;
+  const ticks: number[] = [];
+  for (let v = start; v <= max + step * 1e-9; v += step) {
+    ticks.push(Math.abs(v) < step * 1e-9 ? 0 : v);
+  }
+  return ticks;
+}
+
+function fmtTick(v: number): string {
+  if (v === 0) return "0";
+  const abs = Math.abs(v);
+  if (abs >= 100) return v.toFixed(0);
+  if (abs >= 1) return v.toFixed(1).replace(/\.0$/, "");
+  return v.toFixed(2);
+}
+
 export type ComplexPoint = {
   re: number;
   im: number;
@@ -71,6 +98,18 @@ export default function ComplexPlane({
       )}
       <text x={width - PAD} y={yScale(0) - 4} fontSize={10} textAnchor="end" fill="currentColor" opacity={0.5}>real</text>
       <text x={xScale(0) + 4} y={PAD + 8} fontSize={10} fill="currentColor" opacity={0.5}>imag</text>
+      {niceTicks(reRange[0], reRange[1], 5).map((v) => (
+        <g key={`xt-${v}`} transform={`translate(${xScale(v)}, ${yScale(0)})`}>
+          <line y1={-3} y2={3} stroke="currentColor" strokeOpacity={0.4} />
+          <text y={14} fontSize={9} textAnchor="middle" fill="currentColor" opacity={0.55}>{fmtTick(v)}</text>
+        </g>
+      ))}
+      {niceTicks(imRange[0], imRange[1], 5).map((v) => v === 0 ? null : (
+        <g key={`yt-${v}`} transform={`translate(${xScale(0)}, ${yScale(v)})`}>
+          <line x1={-3} x2={3} stroke="currentColor" strokeOpacity={0.4} />
+          <text x={-6} y={3} fontSize={9} textAnchor="end" fill="currentColor" opacity={0.55}>{fmtTick(v)}</text>
+        </g>
+      ))}
       {points.map((p, i) => {
         const id = p.id ?? `p${i}`;
         return (
