@@ -13,7 +13,6 @@ const MODES: { id: Mode; label: string }[] = [
   { id: "symmetric", label: "Symmetric (Wigner)" },
   { id: "elliptic", label: "Elliptic" },
   { id: "ei", label: "E/I (Dale's law)" },
-  { id: "multipop", label: "Multi-population" },
 ];
 
 function eigsOf(M: number[][]): { re: number; im: number }[] {
@@ -26,19 +25,17 @@ function eigsOf(M: number[][]): { re: number; im: number }[] {
 
 export default function Fig5Demo() {
   const [mode, setMode] = useState<Mode>("iid");
-  const [N, setN] = useState(150);
+  const [N, setN] = useState(50);
   const [sigma, setSigma] = useState(1);
   const [rho, setRho] = useState(0.5);
   const [f, setF] = useState(0.8);
   const [muE, setMuE] = useState(1);
   const [muI, setMuI] = useState(-4);
-  const [alpha, setAlpha] = useState(0.5);
-  const [sigmaE, setSigmaE] = useState(1);
-  const [sigmaI, setSigmaI] = useState(2);
   const [seed, setSeed] = useState(42);
   const [animating, setAnimating] = useState(false);
   const [busy, setBusy] = useState(false);
   const [eigs, setEigs] = useState<{ re: number; im: number }[]>([]);
+  const [hasComputed, setHasComputed] = useState(false);
 
   useEffect(() => {
     const u = decodeFig5(readQuery("fig5"));
@@ -57,11 +54,11 @@ export default function Fig5Demo() {
     if (mode === "iid") return { mode, N, sigma, seed };
     if (mode === "symmetric") return { mode, N, sigma, seed };
     if (mode === "elliptic") return { mode, N, sigma, rho, seed };
-    if (mode === "ei") return { mode, N, sigma, f, muE, muI, seed };
-    return { mode, N, alpha, sigmaE, sigmaI, seed };
-  }, [mode, N, sigma, rho, f, muE, muI, alpha, sigmaE, sigmaI, seed]);
+    return { mode, N, sigma, f, muE, muI, seed }; // ei
+  }, [mode, N, sigma, rho, f, muE, muI, seed]);
 
   useEffect(() => {
+    if (!hasComputed) return;
     setBusy(true);
     const t = setTimeout(() => {
       try {
@@ -72,15 +69,15 @@ export default function Fig5Demo() {
       } finally {
         setBusy(false);
       }
-    }, 0);
+    }, 30);
     return () => clearTimeout(t);
-  }, [spec]);
+  }, [spec, hasComputed]);
 
   useEffect(() => {
-    if (!animating) return;
-    const id = setInterval(() => setSeed((s) => s + 1), 1000);
+    if (!animating || !hasComputed) return;
+    const id = setInterval(() => setSeed((s) => s + 1), 1500);
     return () => clearInterval(id);
-  }, [animating]);
+  }, [animating, hasComputed]);
 
   return (
     <div className="my-6 grid grid-cols-1 md:grid-cols-3 gap-4 not-prose">
@@ -88,6 +85,7 @@ export default function Fig5Demo() {
         <div className="flex items-center justify-between text-xs text-zinc-500 mb-2">
           <span>Eigenspectrum (N = {N})</span>
           {busy && <span className="text-zinc-400">computing…</span>}
+          {!hasComputed && !busy && <span className="text-zinc-400">click "Sample &amp; compute" →</span>}
         </div>
         <ComplexPlane width={420} height={360}
           reRange={[-3, 3]} imRange={[-3, 3]}
@@ -118,22 +116,28 @@ export default function Fig5Demo() {
             <Slider label="μ_I" min={-10} max={0} step={0.1} value={muI} onChange={setMuI}/>
           </>
         )}
-        {mode === "multipop" && (
-          <>
-            <Slider label="α (frac type 1)" min={0.1} max={0.9} step={0.05} value={alpha} onChange={setAlpha}/>
-            <Slider label="σ_E" min={0.1} max={3} step={0.1} value={sigmaE} onChange={setSigmaE}/>
-            <Slider label="σ_I" min={0.1} max={3} step={0.1} value={sigmaI} onChange={setSigmaI}/>
-          </>
-        )}
-        <div className="flex gap-2 mt-3 flex-wrap items-center">
-          <button className="px-2 py-1 rounded border border-zinc-300 text-xs" onClick={() => setSeed((s) => s + 1)}>
-            Re-roll
-          </button>
-          <button
-            className={`px-2 py-1 rounded border text-xs ${animating ? "bg-accent text-white" : "border-zinc-300"}`}
-            onClick={() => setAnimating((a) => !a)}>
-            {animating ? "Stop" : "Animate"}
-          </button>
+        <div className="flex flex-wrap gap-2 mt-3">
+          {!hasComputed && (
+            <button
+              className="px-3 py-1 rounded bg-accent text-white text-xs"
+              onClick={() => { setHasComputed(true); setSeed((s) => s + 1); }}
+            >
+              Sample &amp; compute
+            </button>
+          )}
+          {hasComputed && (
+            <>
+              <button className="px-2 py-1 rounded border border-zinc-300 text-xs"
+                onClick={() => setSeed((s) => s + 1)}>
+                Re-roll
+              </button>
+              <button
+                className={`px-2 py-1 rounded border text-xs ${animating ? "bg-accent text-white" : "border-zinc-300"}`}
+                onClick={() => setAnimating((a) => !a)}>
+                {animating ? "Stop" : "Animate"}
+              </button>
+            </>
+          )}
           <button type="button" className="text-xs underline text-zinc-500 ml-2"
             onClick={() => navigator.clipboard.writeText(window.location.href)}>
             copy share link
