@@ -8,6 +8,7 @@ import Fig2Demo from "@/components/eigen/Fig2Demo";
 import Fig3Demo from "@/components/eigen/Fig3Demo";
 import Fig4Demo from "@/components/eigen/Fig4Demo";
 import Fig5Demo from "@/components/eigen/Fig5Demo";
+import BondanelliDemo from "@/components/eigen/BondanelliDemo";
 
 # The Eigenvalue Value (in Neuroscience)
 
@@ -56,6 +57,28 @@ predictable shape. Switch between IID Gaussian (Girko's circular law), symmetric
 (Wigner's semicircle), correlated (elliptic), and E/I networks (Dale's law).
 
 <Fig5Demo client:visible />
+
+## Bonus — Amplification via dominant eigenvector (Bondanelli & Ostojic 2020)
+
+The classic "non-normality" picture says that to get **transient amplification** you
+need the eigenvectors of $\mathbf{J}$ to be non-orthogonal. Bondanelli & Ostojic
+sharpened this: the precise criterion is on the **symmetric part** of the connectivity,
+
+$$
+\mathbf{J}_S = \tfrac{1}{2}(\mathbf{J} + \mathbf{J}^\top),
+$$
+
+and you get amplified trajectories if and only if its largest eigenvalue exceeds 1,
+i.e., $\lambda_{\max}(\mathbf{J}_S) > 1$. This can hold even when $\mathbf{J}$ itself
+is stable (all eigenvalues of $\mathbf{J}$ have negative real part). The **optimal
+input direction** $\mathbf{r}_0$ that achieves the maximum amplification is precisely
+the eigenvector of $\mathbf{J}_S$ associated with $\lambda_{\max}(\mathbf{J}_S)$.
+
+In the demo below: drag the eigenvalues of $\mathbf{J}$ on the left, watch the spectrum
+of $\mathbf{J}_S$ on the right (always real). When the indicator says "Amplifying", click
+**Snap r₀ to top eigenvector of J_S** to maximize the transient.
+
+<BondanelliDemo client:visible />
 
 ---
 
