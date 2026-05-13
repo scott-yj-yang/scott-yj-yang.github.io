@@ -51,3 +51,40 @@ export function writeQuery(key: string, value: string | null): void {
   else url.searchParams.set(key, value);
   window.history.replaceState(null, "", url.toString());
 }
+
+export type Fig3State = { shift: number; mu1: number; mu2: number; outlier: number };
+export type Fig4State = { theta: number; pseudo: string };
+export type Fig5State = { mode: string; N: number; seed: number };
+
+export function encodeFig3(s: Fig3State) {
+  return [s.shift, s.mu1, s.mu2, s.outlier].map((x) => x.toFixed(3)).join(",");
+}
+export function decodeFig3(raw: string | null): Fig3State | null {
+  if (!raw) return null;
+  const p = raw.split(",").map(Number);
+  if (p.length !== 4 || p.some(Number.isNaN)) return null;
+  return { shift: p[0], mu1: p[1], mu2: p[2], outlier: p[3] };
+}
+
+export function encodeFig4(s: Fig4State) {
+  return `${s.theta.toFixed(3)},${s.pseudo}`;
+}
+export function decodeFig4(raw: string | null): Fig4State | null {
+  if (!raw) return null;
+  const [t, p] = raw.split(",");
+  const theta = Number(t);
+  if (Number.isNaN(theta) || !p) return null;
+  return { theta, pseudo: p };
+}
+
+export function encodeFig5(s: Fig5State) {
+  return `${s.mode},${s.N},${s.seed}`;
+}
+export function decodeFig5(raw: string | null): Fig5State | null {
+  if (!raw) return null;
+  const [mode, n, seed] = raw.split(",");
+  const N = Number(n);
+  const sd = Number(seed);
+  if (!mode || Number.isNaN(N) || Number.isNaN(sd)) return null;
+  return { mode, N, seed: sd };
+}

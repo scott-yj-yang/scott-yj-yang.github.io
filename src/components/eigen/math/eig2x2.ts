@@ -70,3 +70,39 @@ function mul(A: Matrix2x2, B: Matrix2x2): Matrix2x2 {
     [A[1][0] * B[0][0] + A[1][1] * B[1][0], A[1][0] * B[0][1] + A[1][1] * B[1][1]],
   ];
 }
+
+export type Schur2x2 = {
+  T: Matrix2x2;
+  block: "real" | "complex";
+  /** ‖off-diagonal of T‖_F — measures non-normality. */
+  norm12: number;
+};
+
+/**
+ * Compute the Schur form of a 2x2 real matrix W (up to similarity).
+ * For real eigenvalues, T is upper-triangular with the eigenvalues on the diagonal
+ * and the strictly-upper entry derived from the Frobenius identity.
+ * For complex pair (a ± bi), T is the canonical real block [[a,-b],[b,a]];
+ * we measure non-normality via the residual Frobenius norm.
+ */
+export function schur2x2(W: Matrix2x2): Schur2x2 {
+  const e = eig2x2(W);
+  const fro2 = W[0][0] ** 2 + W[0][1] ** 2 + W[1][0] ** 2 + W[1][1] ** 2;
+  if (e.kind === "real") {
+    const off2 = Math.max(0, fro2 - e.lambda1.re ** 2 - e.lambda2.re ** 2);
+    const t12 = Math.sqrt(off2);
+    return {
+      T: [[e.lambda1.re, t12], [0, e.lambda2.re]],
+      block: "real",
+      norm12: t12,
+    };
+  }
+  const a = e.lambda1.re;
+  const b = Math.abs(e.lambda1.im);
+  const off2 = Math.max(0, fro2 - 2 * (a * a + b * b));
+  return {
+    T: [[a, -b], [b, a]],
+    block: "complex",
+    norm12: Math.sqrt(off2),
+  };
+}
