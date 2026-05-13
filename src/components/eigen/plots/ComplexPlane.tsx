@@ -96,8 +96,8 @@ export default function ComplexPlane({
           stroke="rgb(124,58,237)" strokeWidth={1.5} strokeDasharray="4 3"
         />
       )}
-      <text x={width - PAD} y={yScale(0) - 4} fontSize={10} textAnchor="end" fill="currentColor" opacity={0.5}>real</text>
-      <text x={xScale(0) + 4} y={PAD + 8} fontSize={10} fill="currentColor" opacity={0.5}>imag</text>
+      <text x={width - PAD} y={yScale(0) - 4} fontSize={10} textAnchor="end" fill="currentColor" opacity={0.65}>Re(λ)</text>
+      <text x={xScale(0) + 4} y={PAD + 8} fontSize={10} fill="currentColor" opacity={0.65}>Im(λ)</text>
       {niceTicks(reRange[0], reRange[1], 5).map((v) => (
         <g key={`xt-${v}`} transform={`translate(${xScale(v)}, ${yScale(0)})`}>
           <line y1={-3} y2={3} stroke="currentColor" strokeOpacity={0.4} />
