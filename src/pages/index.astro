@@ -2,104 +2,95 @@
 import { getCollection, render } from "astro:content";
 import { Image } from "astro:assets";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import PaperCard from "@/components/PaperCard.astro";
+import Section from "@/components/Section.astro";
+import PubItem from "@/components/PubItem.astro";
 import NewsItem from "@/components/NewsItem.astro";
-import Chip from "@/components/Chip.astro";
+import { site } from "@/data/site";
 import heroImage from "@/assets/scott-hero.jpg";
 
-const allPapers = await getCollection("papers", ({ data }) => !data.draft);
-const selectedPapers = allPapers
-  .filter((p) => p.data.selected)
-  .sort((a, b) => b.data.year - a.data.year);
+const selectedPapers = (await getCollection("papers", ({ data }) => !data.draft && data.selected))
+  .sort((a, b) => b.data.year - a.data.year || (b.data.month ?? 0) - (a.data.month ?? 0));
+const hasCoFirst = selectedPapers.some((p) => p.data.authors.some((a) => a.isCoFirst));
 
-const allNews = await getCollection("news");
-const recentNews = allNews
+const recentNews = (await getCollection("news"))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 5);
 
-const chips = ["neuroAI", "motor control", "biomechanics", "deep RL", "virtual rodents"];
+const interests = ["neuroAI", "motor control", "biomechanics", "deep RL", "virtual rodents"];
 ---
 <BaseLayout>
-  <!-- Hero -->
-  <section class="flex flex-col-reverse items-start gap-8 sm:flex-row sm:items-center">
-    <div class="flex-1">
-      <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">
-        Yuanjia <span class="text-accent">(Scott)</span><br />Yang
-      </h1>
-      <p class="mt-2 text-sm text-zinc-400 dark:text-zinc-500">a.k.a. Rheya · they/them</p>
-      <p class="mt-1 text-base text-zinc-600 dark:text-zinc-300">
-        PhD student · Neurosciences · UC San Diego
-      </p>
-      <p class="mt-4 max-w-lg text-sm leading-relaxed text-zinc-600 dark:text-zinc-400">
-        I'm a first-year Neurosciences PhD student at UC San Diego, working in
-        Talmo Pereira's lab at the Salk Institute. I build neuromechanical
-        simulation tools that let virtual animals learn naturalistic behavior —
-        bridging deep reinforcement learning, biomechanics, and motor neuroscience.
-      </p>
-      <div class="mt-4 flex flex-wrap gap-2">
-        {chips.map((c) => <Chip label={c} />)}
-      </div>
-    </div>
-    <div class="group relative shrink-0">
-      <div class="hero-ring hero-ring-outer rounded-full absolute inset-0 opacity-0 group-hover:opacity-100" />
-      <div class="hero-ring hero-ring-mid rounded-full absolute inset-0 opacity-0 group-hover:opacity-100" />
-      <div class="hero-ring hero-ring-inner rounded-full absolute inset-0 opacity-0 group-hover:opacity-100" />
+  <!-- About -->
+  <!--
+    Three pieces: portrait, text, profile links. On a phone they stack in that
+    order. From 640 px the text takes the left column, and the portrait sits on
+    the right with the links under it.
+  -->
+  <section class="grid items-start gap-x-12 gap-y-6 sm:grid-cols-[minmax(0,1fr)_15rem] sm:grid-rows-[auto_1fr]">
+    <div class="group relative justify-self-start sm:col-start-2 sm:row-start-1 sm:justify-self-center">
+      <div class="hero-ring hero-ring-outer absolute inset-0 rounded-full opacity-0 group-hover:opacity-100"></div>
+      <div class="hero-ring hero-ring-mid absolute inset-0 rounded-full opacity-0 group-hover:opacity-100"></div>
+      <div class="hero-ring hero-ring-inner absolute inset-0 rounded-full opacity-0 group-hover:opacity-100"></div>
       <div class="relative rounded-full p-1">
         <Image
           src={heroImage}
-          alt="Yuanjia (Scott) Yang"
-          width={400}
-          height={400}
+          alt={`Portrait of ${site.name}`}
+          width={416}
+          height={416}
           quality={90}
-          class="h-44 w-44 rounded-full border-2 border-white object-cover dark:border-zinc-950"
-          style="object-position: 50% 20%;"
+          loading="eager"
+          class="h-40 w-40 rounded-full border-2 border-paper object-cover sm:h-52 sm:w-52"
         />
       </div>
     </div>
+
+    <div class="min-w-0 sm:col-start-1 sm:row-span-2 sm:row-start-1">
+      <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">{site.name}</h1>
+      <p class="mt-2 text-sm text-faint">a.k.a. Rheya · they/them</p>
+      <p class="mt-4 text-muted">PhD student · Neurosciences · UC San Diego</p>
+      <p class="mt-5 leading-relaxed">
+        I'm a Neurosciences PhD student at UC San Diego, working in
+        <a href="https://talmolab.org" class="link" target="_blank" rel="noopener noreferrer">Talmo Pereira's lab</a>
+        at the Salk Institute. I build neuromechanical simulation tools that let
+        virtual animals learn naturalistic behavior, bridging deep reinforcement
+        learning, biomechanics, and motor neuroscience.
+      </p>
+      <p class="mt-4 text-sm text-faint">{interests.join(" · ")}</p>
+    </div>
+
+    <div class="sm:col-start-2 sm:row-start-2 sm:text-center">
+      <ul class="flex flex-wrap gap-x-4 gap-y-1.5 text-sm sm:justify-center">
+        {site.links.map((link) => (
+          <li>
+            <a href={link.href} class="link" target="_blank" rel="noopener noreferrer">{link.label}</a>
+          </li>
+        ))}
+        <li><a href="/cv" class="link">CV</a></li>
+      </ul>
+      <p class="mt-3 text-sm text-muted sm:text-xs">{site.email}</p>
+    </div>
   </section>
 
-  <!-- Selected Work -->
-  <section class="mt-16">
-    <div class="flex items-baseline justify-between">
-      <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Selected Work</h2>
-      <a href="/research" class="text-xs text-accent hover:underline">All research projects →</a>
-    </div>
-    <div class="mt-4">
-      {selectedPapers.map((paper) => {
-        const projectSlug = paper.id === "mimic-mjx" ? "/research/mimic-mjx" : undefined;
-        return (
-          <PaperCard
-            title={paper.data.title}
-            authors={paper.data.authors}
-            venue={paper.data.venue}
-            year={paper.data.year}
-            status={paper.data.status}
-            pdf={paper.data.pdf}
-            code={paper.data.code}
-            demo={paper.data.demo}
-            arxiv={paper.data.arxiv}
-            href={projectSlug}
-          />
-        );
-      })}
-    </div>
-  </section>
+  <!-- Selected publications -->
+  <Section title="Selected publications" href="/research" linkLabel="All research" class="mt-16">
+    <ul>
+      {selectedPapers.map((paper) => (
+        <PubItem paper={paper.data} meta={String(paper.data.year)} />
+      ))}
+    </ul>
+    {hasCoFirst && <p class="mt-1 text-xs text-faint">* Equal contribution</p>}
+  </Section>
 
-  <!-- Recent -->
-  <section class="mt-16">
-    <div class="flex items-baseline justify-between">
-      <h2 class="text-xs font-semibold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Recent</h2>
-      <a href="/writing" class="text-xs text-accent hover:underline">Writing →</a>
-    </div>
-    <div class="mt-4">
+  <!-- News -->
+  <Section title="News" class="mt-14">
+    <ul>
       {recentNews.map(async (item) => {
         const { Content } = await render(item);
         return (
-          <NewsItem date={item.data.date} kind={item.data.kind}>
+          <NewsItem date={item.data.date}>
             <Content />
           </NewsItem>
         );
       })}
-    </div>
-  </section>
+    </ul>
+  </Section>
 </BaseLayout>

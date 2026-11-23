@@ -8,6 +8,9 @@ import remarkMath from "remark-math";
 export default defineConfig({
   site: "https://scottyang.org",
   output: "static",
+  redirects: {
+    "/now": "/",
+  },
   integrations: [
     mdx({
       remarkPlugins: [remarkMath],

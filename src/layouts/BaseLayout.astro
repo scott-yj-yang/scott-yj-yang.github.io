@@ -3,42 +3,60 @@ import "katex/dist/katex.min.css";
 import { ClientRouter } from "astro:transitions";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
+import { site } from "@/data/site";
 import "@/styles/global.css";
 
 interface Props {
+  /** Short page name ("Research"). The site name is appended; omit on the home page. */
   title?: string;
   description?: string;
 }
 
-const {
-  title = "Yuanjia (Scott) Yang",
-  description = "PhD student in Neurosciences at UC San Diego. NeuroAI, motor control, biomechanics.",
-} = Astro.props;
+const { title, description = site.description } = Astro.props;
+const fullTitle = title ? `${title} — ${site.name}` : site.name;
+const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
-    <meta property="og:title" content={title} />
+    <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>{title}</title>
+    <title>{fullTitle}</title>
     <ClientRouter />
     <script is:inline>
-      (function() {
-        const stored = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        if (stored === "dark" || (!stored && prefersDark)) {
-          document.documentElement.classList.add("dark");
+      // Set the theme before first paint, and again after each client-side
+      // navigation: the router swaps <html>'s attributes for the new page's.
+      (function () {
+        function applyTheme() {
+          var stored = null;
+          try { stored = localStorage.getItem("theme"); } catch (e) {}
+          var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          document.documentElement.classList.toggle("dark", stored === "dark" || (!stored && prefersDark));
+        }
+        applyTheme();
+        if (!window.__themeApplied) {
+          window.__themeApplied = true;
+          document.addEventListener("astro:after-swap", applyTheme);
         }
       })();
     </script>
   </head>
-  <body class="min-h-screen bg-white text-zinc-900 font-sans dark:bg-zinc-950 dark:text-zinc-100">
+  <body class="min-h-screen bg-paper font-sans text-ink antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded focus:bg-paper focus:px-3 focus:py-2 focus:text-sm"
+    >
+      Skip to content
+    </a>
     <Header />
-    <main class="mx-auto max-w-3xl px-6 py-12">
+    <main id="main" class="mx-auto max-w-3xl px-6 py-12 sm:py-16">
       <slot />
     </main>
     <Footer />

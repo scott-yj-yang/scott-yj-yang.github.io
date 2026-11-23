@@ -4,28 +4,34 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 
 const posts = (await getCollection("writing", ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const when = (date: Date) =>
+  date.toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
 ---
-<BaseLayout title="Writing — Yuanjia (Scott) Yang">
-  <h1 class="text-3xl font-bold tracking-tight">Writing</h1>
-  <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Conference recaps, technique notes, and thinking out loud.</p>
+<BaseLayout
+  title="Writing"
+  description="Conference recaps, technique notes, and thinking out loud."
+>
+  <h1 class="page-title">Writing</h1>
+  <p class="mt-3 text-muted">Conference recaps, technique notes, and thinking out loud.</p>
 
   {posts.length === 0 ? (
-    <p class="mt-8 text-sm text-zinc-400 dark:text-zinc-500 italic">Nothing here yet. Check back soon.</p>
+    <p class="mt-12 border-t border-rule pt-5 text-sm text-faint">Nothing here yet. Check back soon.</p>
   ) : (
-    <div class="mt-8 space-y-6">
+    <ul class="mt-12 border-t border-rule">
       {posts.map((post) => (
-        <a href={`/writing/${post.id}`} class="group block">
-          <p class="text-sm text-zinc-400 dark:text-zinc-500">
-            {post.data.date.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
-          </p>
-          <h2 class="text-lg font-semibold text-zinc-900 group-hover:text-accent dark:text-zinc-100 transition-colors">
-            {post.data.title}
-          </h2>
-          {post.data.excerpt && (
-            <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">{post.data.excerpt}</p>
-          )}
-        </a>
+        <li class="grid gap-y-1 border-b border-rule py-5 last:border-b-0 sm:grid-cols-[4.5rem_1fr] sm:gap-x-6">
+          <div class="text-sm tabular-nums text-faint sm:pt-0.5">{when(post.data.date)}</div>
+          <div class="min-w-0">
+            <h2 class="font-medium leading-snug text-ink">
+              <a href={`/writing/${post.id}`} class="hover:text-accent">{post.data.title}</a>
+            </h2>
+            {post.data.excerpt && (
+              <p class="mt-1.5 text-sm leading-relaxed text-muted">{post.data.excerpt}</p>
+            )}
+          </div>
+        </li>
       ))}
-    </div>
+    </ul>
   )}
 </BaseLayout>

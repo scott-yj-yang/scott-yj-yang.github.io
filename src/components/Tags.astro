@@ -1,0 +1,12 @@
+---
+/** Tags as one quiet line of text, not pills. */
+interface Props {
+  tags: string[];
+  class?: string;
+}
+
+const { tags, class: className } = Astro.props;
+---
+{tags.length > 0 && (
+  <p class:list={["text-sm text-faint", className]}>{tags.join(" · ")}</p>
+)}

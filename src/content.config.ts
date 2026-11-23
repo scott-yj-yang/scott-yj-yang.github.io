@@ -13,11 +13,17 @@ const papers = defineCollection({
     venue: z.string(),
     year: z.number(),
     month: z.number().optional(),
-    status: z.enum(["published", "under-review", "preprint", "thesis", "workshop"]),
+    /** Shown after the venue, e.g. "Oral" or "Accepted in principle". */
+    note: z.string().optional(),
+    status: z.enum(["published", "accepted", "under-review", "preprint", "thesis", "workshop"]),
     selected: z.boolean().default(false),
     bibtexKey: z.string().optional(),
+    /** The paper itself: publisher or OpenReview page. */
+    link: z.string().optional(),
     pdf: z.string().optional(),
     code: z.string().optional(),
+    /** Project page. */
+    project: z.string().optional(),
     demo: z.string().optional(),
     arxiv: z.string().optional(),
     doi: z.string().optional(),
@@ -48,6 +54,7 @@ const projects = defineCollection({
     blurb: z.string(),
     repo: z.string(),
     demo: z.string().optional(),
+    docs: z.string().optional(),
     cover: z.string().optional(),
     tags: z.array(z.string()).default([]),
     date: z.coerce.date(),

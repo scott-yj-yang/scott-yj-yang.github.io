@@ -1,21 +1,27 @@
 ---
 title: "estrapatch"
-blurb: "Estrogen patch scheduling and reminder app."
+blurb: "Privacy-first, client-side estradiol patch tracker and pharmacokinetic simulator."
 repo: "https://github.com/scott-yj-yang/estrapatch"
-tags: [health, scheduling]
-date: 2025-01-01
+demo: "https://estrapatch.vercel.app"
+tags: [health, PWA, Next.js, TypeScript]
+date: 2026-02-25
 ---
 
 ## What it does
 
-Estrapatch is a scheduling and reminder tool for managing estrogen patch changes. It tracks patch rotation schedules and sends timely reminders to help maintain consistent dosing.
+estrapatch tracks estradiol patch applications, estimates serum E2 levels over time, and helps plan a patch schedule. Everything runs in the browser: no data leaves your device.
 
 ## Key features
 
-- Customizable rotation schedules
-- Reminder notifications
-- History tracking and logging
+- Patch tracking, with body placement mapping
+- E2 level estimation from a pharmacokinetic simulation based on FDA clinical study data
+- Support for five FDA-approved dose levels (0.025 to 0.1 mg/day)
+- A what-if simulator for trying different schedules and doses
+- Recommendations on when to apply or remove a patch, and browser reminders when one is due
+- Data export and import as JSON
+- Installable as a PWA; all data is stored locally in IndexedDB
 
 ## Links
 
+- [Live app](https://estrapatch.vercel.app)
 - [Source code on GitHub](https://github.com/scott-yj-yang/estrapatch)

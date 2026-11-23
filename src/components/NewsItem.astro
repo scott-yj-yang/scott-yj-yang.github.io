@@ -1,24 +1,28 @@
 ---
 interface Props {
   date: Date;
-  kind: string;
 }
 
-const { date, kind } = Astro.props;
-const formatted = date.toLocaleString("en-US", { month: "short", year: "numeric" });
-
-const kindColors: Record<string, string> = {
-  paper: "bg-emerald-400",
-  talk: "bg-blue-400",
-  post: "bg-accent",
-  misc: "bg-zinc-400",
-};
-const dotColor = kindColors[kind] || kindColors.misc;
+const { date } = Astro.props;
+// Date-only values parse as UTC midnight, so format in UTC (see TalkEntry).
+const when = date.toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
 ---
-<div class="flex gap-3 py-2 border-b border-zinc-50 dark:border-zinc-800/50 last:border-b-0">
-  <div class="w-20 shrink-0 text-sm tabular-nums text-zinc-400 dark:text-zinc-500">{formatted}</div>
-  <div class="flex items-start gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-    <span class:list={["mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full", dotColor]}></span>
-    <span><slot /></span>
+<li class="grid gap-y-1 border-b border-rule py-3 last:border-b-0 sm:grid-cols-[4.5rem_1fr] sm:gap-x-6">
+  <div class="text-sm tabular-nums text-faint sm:pt-px">{when}</div>
+  <div class="news-body min-w-0 text-[0.9375rem] leading-relaxed text-ink">
+    <slot />
   </div>
-</div>
+</li>
+
+<style>
+  /* The slot is rendered Markdown, so its links cannot carry utility classes. */
+  .news-body :global(a) {
+    color: var(--color-accent);
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+  }
+  .news-body :global(a:hover) {
+    text-decoration-color: currentColor;
+  }
+</style>
