@@ -1,25 +1,63 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
-import ProjectCard from "@/components/ProjectCard.astro";
+import Section from "@/components/Section.astro";
+import Tags from "@/components/Tags.astro";
+import LinkList from "@/components/LinkList.astro";
+import { demos } from "@/data/site";
 
 const projects = (await getCollection("projects", ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
-<BaseLayout title="Vibes — Yuanjia (Scott) Yang">
-  <h1 class="text-3xl font-bold tracking-tight">Vibes</h1>
-  <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-400">Side projects and tools I've vibe coded.</p>
+<BaseLayout
+  title="Projects"
+  description="Side projects, tools, and interactive course demos by Yuanjia (Scott) Yang."
+>
+  <h1 class="page-title">Projects</h1>
+  <p class="mt-3 text-muted">Side projects and tools I've built outside of research, plus interactive demos made for courses.</p>
 
-  <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-    {projects.map((project) => (
-      <ProjectCard
-        title={project.data.title}
-        blurb={project.data.blurb}
-        repo={project.data.repo}
-        demo={project.data.demo}
-        tags={project.data.tags}
-        slug={project.body?.trim() ? project.id : undefined}
-      />
-    ))}
-  </div>
+  <Section id="side-projects" title="Side projects" class="mt-12">
+    <ul>
+      {projects.map((project) => {
+        const hasPage = Boolean(project.body?.trim());
+        const links = [
+          hasPage && { label: "Details", href: `/projects/${project.id}` },
+          project.data.demo && { label: "Live app", href: project.data.demo },
+          project.data.docs && { label: "Docs", href: project.data.docs },
+          { label: "GitHub", href: project.data.repo },
+        ].filter((l): l is { label: string; href: string } => Boolean(l));
+        return (
+          <li class="border-b border-rule py-5 last:border-b-0">
+            <h3 class="font-medium text-ink">
+              {hasPage ? (
+                <a href={`/projects/${project.id}`} class="hover:text-accent">{project.data.title}</a>
+              ) : (
+                project.data.title
+              )}
+            </h3>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{project.data.blurb}</p>
+            <Tags tags={project.data.tags} class="mt-1.5" />
+            <LinkList links={links} class="mt-2" />
+          </li>
+        );
+      })}
+    </ul>
+  </Section>
+
+  <Section id="demos" title="Interactive demos" class="mt-14">
+    <ul>
+      {demos.map((demo) => (
+        <li class="border-b border-rule py-5 last:border-b-0">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-4">
+            <h3 class="font-medium text-ink">
+              <a href={demo.href} class="hover:text-accent">{demo.title}</a>
+            </h3>
+            <span class="text-sm text-faint">{demo.course}</span>
+          </div>
+          <p class="mt-1.5 text-sm leading-relaxed text-muted">{demo.blurb}</p>
+          <LinkList links={[{ label: "Open demo", href: demo.href }]} class="mt-2" />
+        </li>
+      ))}
+    </ul>
+  </Section>
 </BaseLayout>

@@ -1,21 +1,20 @@
 ---
-title: "new-prompt"
-blurb: "Custom terminal prompt configuration tool."
+title: "newprompt"
+blurb: "CLI tool for managing Claude Code prompt history: one directory per prompt, with the chat log saved beside it."
 repo: "https://github.com/scott-yj-yang/new-prompt"
-tags: [CLI, terminal]
-date: 2024-01-01
+tags: [CLI, Python, Claude Code]
+date: 2026-02-16
 ---
 
 ## What it does
 
-A tool for configuring and customizing terminal prompts. Quickly set up an informative, clean shell prompt with git status, environment info, and custom styling.
+`newprompt` keeps a record of Claude Code sessions. Each prompt gets its own dated directory holding the prompt, the plan, and the full conversation.
 
 ## Key features
 
-- Git branch and status integration in prompt
-- Environment and virtualenv awareness
-- Fast — no noticeable delay on prompt render
-- Easy to configure and extend
+- `newprompt --launch <topic>` creates the directory, opens your editor for the prompt, and launches Claude Code
+- When the session ends, the chat history is copied into the prompt directory, along with a human-readable Markdown version
+- A manual workflow for sessions that are already open: create the directory first, then save the chat afterwards with `--save-chat`
 
 ## Links
 

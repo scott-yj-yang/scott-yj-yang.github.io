@@ -1,14 +1,30 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro";
+import Prose from "@/components/Prose.astro";
 
-interface Props {
-  title: string;
+/**
+ * For standalone .mdx pages: set `layout` in the page's frontmatter, with
+ * `title`, and optionally `description`, `backHref` and `backLabel`.
+ * An MDX page hands its frontmatter to the layout as one `frontmatter` prop.
+ */
+interface Options {
+  title?: string;
+  description?: string;
+  backHref?: string;
+  backLabel?: string;
+}
+interface Props extends Options {
+  frontmatter?: Options;
 }
 
-const { title } = Astro.props;
+const { frontmatter = {}, ...direct } = Astro.props;
+const { title, description, backHref, backLabel } = { ...frontmatter, ...direct };
 ---
-<BaseLayout title={`${title} — Yuanjia (Scott) Yang`}>
-  <article class="prose prose-zinc max-w-none dark:prose-invert">
+<BaseLayout title={title} description={description}>
+  {backHref && backLabel && (
+    <a href={backHref} class="link text-sm"><span aria-hidden="true">←</span> {backLabel}</a>
+  )}
+  <Prose class={backHref ? "mt-6" : undefined}>
     <slot />
-  </article>
+  </Prose>
 </BaseLayout>

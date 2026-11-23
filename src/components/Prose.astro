@@ -1,0 +1,18 @@
+---
+/** Long-form text (MDX bodies): the typography plugin, tuned to the site's tokens. */
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+<article
+  class:list={[
+    "prose prose-zinc max-w-none dark:prose-invert",
+    "prose-headings:font-semibold prose-headings:tracking-tight",
+    "prose-a:font-normal prose-a:text-accent prose-a:decoration-accent/40 prose-a:underline-offset-2 hover:prose-a:decoration-accent",
+    className,
+  ]}
+>
+  <slot />
+</article>

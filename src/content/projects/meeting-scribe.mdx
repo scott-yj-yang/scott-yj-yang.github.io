@@ -1,21 +1,23 @@
 ---
-title: "meeting-scribe"
-blurb: "Automatic meeting transcription and summary tool."
+title: "MeetingScribe"
+blurb: "Self-hosted, privacy-first meeting transcription and summaries for macOS, transcribed on-device with whisper.cpp."
 repo: "https://github.com/scott-yj-yang/meeting-scribe"
-tags: [CLI, LLM, audio]
-date: 2025-01-01
+tags: [macOS, Swift, whisper.cpp, LLM]
+date: 2026-03-24
 ---
 
 ## What it does
 
-Meeting Scribe automatically transcribes and summarizes meetings, extracting key decisions, action items, and discussion points. Built as a CLI tool that processes audio recordings and generates structured summaries using LLMs.
+MeetingScribe is a menu bar app for macOS that records a meeting's system audio and microphone, transcribes it on-device with whisper.cpp, and summarizes it with Claude Code or a local LLM.
 
 ## Key features
 
-- Audio transcription with speaker diarization
-- LLM-powered summarization with configurable detail levels
-- Exports structured notes with action items and key decisions
-- CLI-first workflow that integrates into existing toolchains
+- One-click recording from the menu bar, with a live transcription preview to confirm audio is working
+- Fully offline, on-device transcription
+- Summaries from the Claude Code CLI or a local Ollama model, selectable in Settings
+- Calendar integration that suggests meeting titles from your events
+- Notes taken before or during a meeting are saved alongside the transcript
+- Recordings organized into dated folders, with a `meetingctl` command-line tool to list them
 
 ## Links
 

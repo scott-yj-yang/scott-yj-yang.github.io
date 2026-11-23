@@ -1,21 +1,23 @@
 ---
-title: "sweep-dashboard"
-blurb: "Dashboard for visualizing hyperparameter sweep results."
+title: "Sweep Dashboard"
+blurb: "Web dashboard to monitor, manage, and dispatch RL training sweeps across a heterogeneous GPU cluster."
 repo: "https://github.com/scott-yj-yang/sweep-dashboard"
-tags: [visualization, ML]
-date: 2025-01-01
+tags: [ML infrastructure, FastAPI, Python]
+date: 2026-02-21
 ---
 
 ## What it does
 
-A visualization dashboard for exploring hyperparameter sweep results across ML experiments. Designed to help researchers quickly identify the best-performing configurations and understand how different hyperparameters interact.
+Sweep Dashboard gives one view of a mixed GPU cluster: which nodes are healthy, what is running where, and how hard each GPU is working. It connects to nodes over SSH, so nothing needs to be installed on the compute nodes.
 
 ## Key features
 
-- Interactive plots for comparing sweep runs side-by-side
-- Filter and sort by any metric or hyperparameter
-- Visual identification of trends and parameter interactions
-- Fast iteration over large sweep result sets
+- Real-time cluster overview with node health, GPU utilization, and running jobs
+- Per-node GPU monitoring (utilization, VRAM, temperature) via `nvidia-smi`
+- Remote log viewer with auto-refresh
+- Job dispatch: upload and launch sweep scripts on any node
+- Browser-based SSH terminal for quick node access
+- Add, remove, and configure nodes from the web UI, with encrypted password storage
 
 ## Links
 

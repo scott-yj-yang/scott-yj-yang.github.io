@@ -1,22 +1,24 @@
 ---
 title: "LatePenalty"
-blurb: "Automated late penalty calculator for course grading."
+blurb: "Python package that applies late penalties to Gradescope and nbgrader submissions when posting grades to Canvas."
 repo: "https://github.com/scott-yj-yang/LatePenalty"
-tags: [education, automation]
-date: 2024-01-01
+docs: "https://scott-yj-yang.github.io/LatePenalty/"
+tags: [education, Python, Canvas]
+date: 2023-04-28
 ---
 
 ## What it does
 
-LatePenalty automates the calculation and application of late submission penalties for course assignments. Born from years of TA experience at UC San Diego, it removes the tedious manual work of tracking deadlines and applying grading policies consistently.
+Gradescope accepts late submissions but does not penalize them, and its built-in "Post Grades to Canvas" posts the raw score. LatePenalty applies the course's late policy when grades are published from Gradescope to Canvas, with a custom message telling each student what was applied. It supports nbgrader as well.
 
 ## Key features
 
-- Configurable late penalty policies (percentage per day, grace periods, hard cutoffs)
-- Batch processing of student submissions
-- Integration with course management platforms
-- Audit log for transparency in grading decisions
+- Late penalties applied according to the course policy
+- Custom messages to students about the penalty
+- Combines an assignment's separate components (for example an auto-graded notebook and handwritten work) into one Canvas grade
+- Installable with `pip install LatePenalty`
 
 ## Links
 
+- [Documentation and tutorials](https://scott-yj-yang.github.io/LatePenalty/)
 - [Source code on GitHub](https://github.com/scott-yj-yang/LatePenalty)

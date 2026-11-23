@@ -4,26 +4,113 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-@theme {
+/*
+  Design tokens: one typeface, one accent, hairline rules.
+
+  Light values live in @theme and .dark overrides them below, so a utility such
+  as text-muted or border-rule follows the theme without a dark: variant.
+  Text colours all clear 4.5:1 on their background in both themes.
+*/
+@theme static {
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  --color-accent: #a78bfa;
+
+  --color-paper: #ffffff;
+  --color-ink: #18181b;
+  --color-muted: #52525b;
+  --color-faint: #71717a;
+  --color-rule: #e4e4e7;
+
+  --color-accent: #6d28d9;
   --color-accent-light: #c4b5fd;
-  --color-accent-dark: #7c3aed;
+  --color-accent-dark: #5b21b6;
 }
 
-* {
-  transition-property: background-color, color, border-color, opacity;
-  transition-duration: 200ms;
-  transition-timing-function: ease-in-out;
+.dark {
+  --color-paper: #111113;
+  --color-ink: #ededf0;
+  --color-muted: #adadb6;
+  --color-faint: #8f8f99;
+  --color-rule: #2b2b30;
+
+  --color-accent: #a78bfa;
+  --color-accent-dark: #c4b5fd;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  a {
+    transition:
+      color 150ms ease,
+      text-decoration-color 150ms ease;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
+}
+
+@layer components {
+  /* Page heading: one per page. */
+  .page-title {
+    font-size: 1.875rem;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  /* Small uppercase label that opens a section. */
+  .section-label {
+    font-size: 0.75rem;
+    line-height: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-faint);
+  }
+
+  /* The only link style outside running prose: accent text, underline on hover. */
+  .link {
+    color: var(--color-accent);
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 3px;
+  }
+
+  .link:hover {
+    text-decoration-color: currentColor;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     transition-duration: 0ms !important;
     animation-duration: 0ms !important;
   }
 }
 
+/* Portrait: rings that fade in and turn while the photo is hovered. */
 .hero-ring {
   transition: opacity 0.6s ease-out, transform 0.6s ease-out;
   transform: scale(0.95);

@@ -1,0 +1,76 @@
+---
+import type { CollectionEntry } from "astro:content";
+import LinkList from "./LinkList.astro";
+
+type Paper = CollectionEntry<"papers">["data"];
+type Author = Paper["authors"][number];
+
+interface Props {
+  paper: Paper;
+  /** Left column, normally the year. */
+  meta: string;
+  /** Same year as the row above: keep the column, hide the repeated year. */
+  repeatMeta?: boolean;
+}
+
+const { paper, meta, repeatMeta = false } = Astro.props;
+
+/** Long author lists show the first three, me, and the last author. */
+const MAX_AUTHORS = 8;
+function visibleAuthors(authors: Author[]): (Author | null)[] {
+  if (authors.length <= MAX_AUTHORS) return authors;
+  const keep = new Set([0, 1, 2, authors.length - 1]);
+  authors.forEach((a, i) => a.isSelf && keep.add(i));
+  const out: (Author | null)[] = [];
+  let prev = -1;
+  for (const i of [...keep].sort((a, b) => a - b)) {
+    if (i - prev > 1) out.push(null); // a gap: rendered as an ellipsis
+    out.push(authors[i]);
+    prev = i;
+  }
+  return out;
+}
+
+const authors = visibleAuthors(paper.authors);
+
+const links = [
+  paper.link && { label: "Paper", href: paper.link },
+  paper.doi && { label: "DOI", href: `https://doi.org/${paper.doi}` },
+  paper.arxiv && { label: "arXiv", href: paper.arxiv },
+  paper.pdf && { label: "PDF", href: paper.pdf },
+  paper.code && { label: "Code", href: paper.code },
+  paper.project && { label: "Project page", href: paper.project },
+  paper.demo && { label: "Live demo", href: paper.demo },
+].filter((l): l is { label: string; href: string } => Boolean(l));
+---
+<li class="grid gap-y-1 border-b border-rule py-5 last:border-b-0 sm:grid-cols-[4.5rem_1fr] sm:gap-x-6">
+  <div
+    class:list={[
+      "text-sm tabular-nums text-faint sm:pt-0.5",
+      repeatMeta && "hidden sm:invisible sm:block",
+    ]}
+  >
+    {meta}
+  </div>
+  <div class="min-w-0">
+    <h3 class="font-medium leading-snug text-ink">{paper.title}</h3>
+    <p class="mt-1.5 text-sm leading-relaxed text-muted">
+      {authors.map((a, i) => (
+        <>
+          {i > 0 && ", "}
+          {a === null ? (
+            <span aria-label="and others">…</span>
+          ) : a.isSelf ? (
+            <span class="font-medium text-ink">{a.name}{a.isCoFirst && "*"}</span>
+          ) : (
+            <span>{a.name}{a.isCoFirst && "*"}</span>
+          )}
+        </>
+      ))}
+    </p>
+    <p class="mt-1 text-sm text-muted">
+      {paper.venue}{paper.note && <> · {paper.note}</>}
+    </p>
+    <LinkList links={links} class="mt-2" />
+  </div>
+</li>

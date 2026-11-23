@@ -1,0 +1,24 @@
+---
+/** A labelled section: small uppercase label over a hairline, optional link at the right. */
+interface Props {
+  title: string;
+  /** Anchor id, for in-page links such as /research#talks. */
+  id?: string;
+  href?: string;
+  linkLabel?: string;
+  class?: string;
+}
+
+const { title, id, href, linkLabel, class: className } = Astro.props;
+---
+<section id={id} class:list={["scroll-mt-24", className]}>
+  <div class="flex items-baseline justify-between gap-4 border-b border-rule pb-2">
+    <h2 class="section-label">{title}</h2>
+    {href && linkLabel && (
+      <a href={href} class="link shrink-0 text-sm">
+        {linkLabel} <span aria-hidden="true">→</span>
+      </a>
+    )}
+  </div>
+  <slot />
+</section>

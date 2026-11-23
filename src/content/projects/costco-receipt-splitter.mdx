@@ -1,22 +1,26 @@
 ---
-title: "costco-receipt-splitter"
-blurb: "Split Costco receipts among roommates or friends."
+title: "Costco Receipt Splitter"
+blurb: "Web app that parses Costco receipts and splits the cost among people with exact decimal math."
 repo: "https://github.com/scott-yj-yang/costco-receipt-splitter"
-tags: [utility, finance]
-date: 2025-01-01
+demo: "https://scott-yj-yang.github.io/costco-receipt-splitter/"
+tags: [web app, JavaScript, OCR]
+date: 2025-11-01
 ---
 
 ## What it does
 
-A practical tool for splitting Costco receipts among a group of people. Upload or input a receipt, assign items to people, and get an instant breakdown of who owes what — including tax proration.
+Paste a Costco receipt as text, or upload a photo for OCR. The app groups discounts and fees with the items they belong to, then splits each item among the people you choose.
 
 ## Key features
 
-- Item-by-item assignment to people
-- Automatic tax and tip proration
-- Clean summary output for sharing
-- Handles shared items split between multiple people
+- Receipt parsing from pasted text or a photo
+- Discounts and fees grouped automatically with their parent items
+- Exact money math with `decimal.js-light`, so no floating-point rounding errors
+- Correct handling of taxable and non-taxable items and CRV fees
+- Equal splits, or splits by parts, with live dollar amounts as you assign
+- A table view of all items, and a flashcard mode that steps through them one at a time
 
 ## Links
 
+- [Live app](https://scott-yj-yang.github.io/costco-receipt-splitter/)
 - [Source code on GitHub](https://github.com/scott-yj-yang/costco-receipt-splitter)
