@@ -16,14 +16,14 @@ pnpm check        # type-check Astro files
 
 ## Content
 
-- **Papers:** `src/content/papers/` — one `.mdx` per publication. Set `selected: true` to show it on the home page; `note` adds text after the venue (for example `Oral`).
+- **Papers:** `src/content/papers/` — one `.mdx` per publication. Set `selected: true` to show it on the home page; `note` adds text after the venue (for example `Oral`); `order` sets its position within its year, lowest first.
 - **Talks:** `src/content/talks/` — one `.mdx` per poster/talk
 - **Research software:** `src/content/research-code/` — one `.mdx` per tool
 - **Projects:** `src/content/projects/` — one `.mdx` per side project
 - **Writing:** `src/content/writing/` — blog posts in MDX
 - **News:** `src/content/news/` — short dated items for the home page
 - **Name, links, menu, interactive demos:** `src/data/site.ts`
-- **CV:** `src/pages/cv.astro` + `public/cv/Yuanjia-Scott-Yang-CV.pdf`
+- **CV:** `src/pages/cv.astro` + `public/cv/Yuanjia-Scott-Yang-CV.pdf`. The page takes its publications and presentations from the papers and talks above; its other sections are lists at the top of the file.
 
 ## Design
 
