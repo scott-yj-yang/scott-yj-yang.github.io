@@ -1,0 +1,127 @@
+---
+/**
+ * A short, silent, looping video with a caption.
+ *
+ * It plays only while it is on screen, loads nothing until it is nearly there,
+ * and does not start on its own for visitors who ask for reduced motion or data
+ * saving. Clicking the video, or its round button, plays or pauses it.
+ * Files live in public/media/; styles are the .clip rules in global.css.
+ */
+interface Props {
+  /** The MP4, e.g. /media/name.mp4. */
+  src: string;
+  /** A WebM of the same clip, offered first when given. */
+  webm?: string;
+  /** The still shown before the clip loads. */
+  poster: string;
+  width: number;
+  height: number;
+  /** What the clip shows, for people who cannot see it. */
+  alt: string;
+  caption?: string;
+  class?: string;
+}
+
+const { src, webm, poster, width, height, alt, caption, class: className } = Astro.props;
+---
+<figure class:list={["not-prose", className]}>
+  <div class="clip" style={`aspect-ratio: ${width} / ${height}`}>
+    <video
+      muted
+      loop
+      playsinline
+      preload="none"
+      poster={poster}
+      width={width}
+      height={height}
+      aria-label={alt}
+      data-clip
+    >
+      {webm && <source src={webm} type="video/webm" />}
+      <source src={src} type="video/mp4" />
+    </video>
+    <button type="button" class="clip-toggle" data-clip-toggle aria-label="Play clip">
+      <svg class="clip-icon-pause" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <path d="M5 3.5v9M11 3.5v9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      </svg>
+      <svg class="clip-icon-play" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+        <path d="M5 3.2v9.6L12.5 8Z" fill="currentColor" />
+      </svg>
+    </button>
+  </div>
+  {caption && <figcaption class="mt-2.5 text-sm leading-relaxed text-faint">{caption}</figcaption>}
+</figure>
+
+<script>
+  // Runs once for the whole site. Clips are found again after every client-side
+  // navigation (astro:page-load also fires on the first load).
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const saveData = Boolean(
+    (navigator as Navigator & { connection?: { saveData?: boolean } }).connection?.saveData,
+  );
+  const onScreen = new WeakMap<HTMLVideoElement, boolean>();
+
+  /** Play or pause to match: on screen, and either asked to play or free to start. */
+  function sync(video: HTMLVideoElement) {
+    const choice = video.dataset.choice; // "play" | "pause" | undefined
+    const autoplay = !reduceMotion.matches && !saveData;
+    const want = Boolean(onScreen.get(video)) && (choice ? choice === "play" : autoplay);
+    if (want) {
+      video.play().catch(() => {});
+    } else if (!video.paused) {
+      video.pause();
+    }
+  }
+
+  function paint(video: HTMLVideoElement) {
+    const button = video.parentElement?.querySelector<HTMLButtonElement>("[data-clip-toggle]");
+    if (!button) return;
+    const playing = !video.paused;
+    button.setAttribute("aria-label", playing ? "Pause clip" : "Play clip");
+    button.dataset.state = playing ? "playing" : "paused";
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        const video = entry.target as HTMLVideoElement;
+        onScreen.set(video, entry.isIntersecting);
+        if (entry.isIntersecting && video.preload === "none") video.preload = "auto";
+        sync(video);
+      }
+    },
+    { rootMargin: "120px 0px" },
+  );
+
+  function findClips() {
+    observer.disconnect();
+    for (const video of document.querySelectorAll<HTMLVideoElement>("video[data-clip]")) {
+      video.muted = true;
+      observer.observe(video);
+      if (video.dataset.clipReady) continue;
+      video.dataset.clipReady = "true";
+      video.addEventListener("play", () => paint(video));
+      video.addEventListener("pause", () => paint(video));
+      paint(video);
+    }
+  }
+
+  // A click on a clip or its button flips it, and remembers the visitor's choice.
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const frame = event.target.closest(".clip");
+    if (!frame || !event.target.closest("video[data-clip], [data-clip-toggle]")) return;
+    const video = frame.querySelector<HTMLVideoElement>("video[data-clip]");
+    if (!video) return;
+    video.dataset.choice = video.paused ? "play" : "pause";
+    if (video.dataset.choice === "play") onScreen.set(video, true);
+    sync(video);
+  });
+
+  reduceMotion.addEventListener("change", () => {
+    for (const video of document.querySelectorAll<HTMLVideoElement>("video[data-clip]")) sync(video);
+  });
+
+  document.addEventListener("astro:page-load", findClips);
+  findClips();
+</script>

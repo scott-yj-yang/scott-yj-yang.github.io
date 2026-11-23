@@ -145,6 +145,8 @@ const sections = [
     <ul>
       {talks.map((talk) => (
         <TalkEntry
+          id={talk.id}
+          lead="title"
           title={talk.data.title}
           venue={talk.data.venue}
           date={talk.data.date}

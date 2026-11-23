@@ -1,32 +1,128 @@
 ---
-import LinkList from "./LinkList.astro";
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+import { monthYear, postLabel } from "@/lib/talks";
 
 interface Props {
+  /** The talk's entry id. It makes the photo panel's id unique on the page. */
+  id: string;
   title: string;
   venue: string;
   date: Date;
   kind: string;
   poster?: string;
   slides?: string;
+  /** A post about the event: shown as a link. */
+  post?: string;
+  /** A 4:3 photo from the event: kept closed behind a "Photo" toggle. */
+  photo?: ImageMetadata;
+  photoAlt?: string;
+  /**
+   * What leads the entry. "venue" (the default): the conference, then the title.
+   * "title": the title, then the conference, the way a CV lists them.
+   */
+  lead?: "venue" | "title";
 }
 
-const { title, venue, date, kind, poster, slides } = Astro.props;
-// Content dates are date-only, so they parse as UTC midnight: format in UTC too,
-// or a build west of Greenwich shows the month before.
-const when = date.toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
+const { id, title, venue, date, kind, poster, slides, post, photo, photoAlt, lead = "venue" } = Astro.props;
 
 const links = [
   poster && { label: "Poster", href: poster },
   slides && { label: "Slides", href: slides },
+  post && { label: postLabel(post), href: post },
 ].filter((l): l is { label: string; href: string } => Boolean(l));
+
+const isExternal = (href: string) => /^https?:\/\//.test(href);
+const panelId = `photo-${id}`;
+const hasMeta = lead === "venue" || links.length > 0 || Boolean(photo);
 ---
 <li class="grid gap-y-1 border-b border-rule py-4 last:border-b-0 sm:grid-cols-[4.5rem_1fr] sm:gap-x-6">
-  <div class="text-sm tabular-nums text-faint sm:pt-0.5">{when}</div>
+  <div class="text-sm tabular-nums text-faint sm:pt-0.5">{monthYear(date)}</div>
   <div class="min-w-0">
-    <h3 class="font-medium leading-snug text-ink">{title}</h3>
-    <p class="mt-1 text-sm text-muted">
-      {venue} · <span class="capitalize">{kind}</span>
-    </p>
-    <LinkList links={links} class="mt-2" />
+    {lead === "venue" ? (
+      <>
+        <h3 class="font-medium leading-snug text-ink">{venue}</h3>
+        <p class="mt-1 text-[0.9375rem] leading-snug text-ink">{title}</p>
+      </>
+    ) : (
+      <>
+        <h3 class="font-medium leading-snug text-ink">{title}</h3>
+        <p class="mt-1 text-sm text-muted">
+          {venue} · <span class="capitalize">{kind}</span>
+        </p>
+      </>
+    )}
+
+    {hasMeta && (
+      <ul class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+        {lead === "venue" && <li class="capitalize text-muted">{kind}</li>}
+        {links.map((link) => (
+          <li>
+            <a
+              href={link.href}
+              class="link"
+              target={isExternal(link.href) ? "_blank" : undefined}
+              rel={isExternal(link.href) ? "noopener noreferrer" : undefined}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))}
+        {photo && (
+          <li>
+            <button
+              type="button"
+              class="link group inline-flex cursor-pointer items-center gap-1"
+              data-photo-toggle
+              aria-expanded="false"
+              aria-controls={panelId}
+            >
+              Photo
+              <svg
+                class="h-3 w-3 transition-transform group-aria-expanded:rotate-180"
+                viewBox="0 0 12 12"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M2.5 4.5 6 8l3.5-3.5" />
+              </svg>
+            </button>
+          </li>
+        )}
+      </ul>
+    )}
+
+    {photo && (
+      <div id={panelId} hidden class="mt-3">
+        <Image
+          src={photo}
+          alt={photoAlt ?? ""}
+          width={896}
+          height={672}
+          widths={[448, 896]}
+          sizes="(min-width: 500px) 448px, 100vw"
+          class="aspect-[4/3] w-full max-w-md rounded-md object-cover"
+        />
+      </div>
+    )}
   </div>
 </li>
+
+<script>
+  // One listener on the document serves every "Photo" toggle, on every page
+  // visited, including pages reached by client-side navigation.
+  document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element)) return;
+    const button = event.target.closest("[data-photo-toggle]");
+    if (!button) return;
+    const panel = document.getElementById(button.getAttribute("aria-controls") ?? "");
+    if (!panel) return;
+    const open = button.getAttribute("aria-expanded") === "true";
+    button.setAttribute("aria-expanded", String(!open));
+    panel.hidden = open;
+  });
+</script>

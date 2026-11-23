@@ -110,49 +110,102 @@
   }
 }
 
-/* Portrait: rings that fade in and turn while the photo is hovered. */
-.hero-ring {
-  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  transform: scale(0.95);
+/*
+  Portrait: a button. Pressing it sets aria-pressed, and a trans flag slides out
+  from behind the photo's upper-right corner, then sways. Pressing again tucks it
+  back. The flag sits under the photo (z-index), so it appears to come from behind.
+*/
+.portrait-button {
+  position: relative;
+  z-index: 1;
+  display: block;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: transform 150ms ease;
+}
+.portrait-button:active {
+  transform: scale(0.985);
+}
+.portrait-button:focus-visible {
+  border-radius: 0.5rem;
+}
+
+.portrait-flag {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 0;
+  font-size: 3rem;
+  line-height: 1;
+  opacity: 0;
+  transform: translate(-25%, 25%) scale(0.4) rotate(-25deg);
+  transition:
+    transform 450ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 150ms ease;
   pointer-events: none;
+  user-select: none;
 }
-.group:hover .hero-ring {
-  transform: scale(1);
-}
-
-.hero-ring-outer {
-  background: conic-gradient(#5BCEFA 0deg, #5BCEFA 72deg, #F5A9B8 72deg, #F5A9B8 144deg, white 144deg, white 216deg, #F5A9B8 216deg, #F5A9B8 288deg, #5BCEFA 288deg, #5BCEFA 360deg);
-  padding: 4px;
-  margin: -6px;
-  transition-delay: 0ms;
-  filter: blur(1px);
-}
-.hero-ring-mid {
-  background: conic-gradient(#F5A9B8 0deg, white 120deg, #5BCEFA 240deg, #F5A9B8 360deg);
-  padding: 3px;
-  margin: -4px;
-  transition-delay: 150ms;
-  filter: blur(2px);
-  opacity: 0;
-}
-.hero-ring-inner {
-  background: conic-gradient(white 0deg, #F5A9B8 90deg, #5BCEFA 180deg, #F5A9B8 270deg, white 360deg);
-  padding: 2px;
-  margin: -2px;
-  transition-delay: 300ms;
-  filter: blur(3px);
-  opacity: 0;
+.portrait-button[aria-pressed="true"] + .portrait-flag {
+  opacity: 1;
+  transform: translate(45%, -50%) scale(1) rotate(8deg);
 }
 
-@keyframes ring-spin {
-  to { transform: rotate(360deg); }
+.portrait-flag-wave {
+  display: inline-block;
+  transform-origin: bottom left;
 }
-.group:hover .hero-ring-outer {
-  animation: ring-spin 8s linear infinite;
+.portrait-button[aria-pressed="true"] + .portrait-flag .portrait-flag-wave {
+  animation: flag-wave 2.6s ease-in-out 450ms infinite;
 }
-.group:hover .hero-ring-mid {
-  animation: ring-spin 12s linear infinite reverse;
+@keyframes flag-wave {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(7deg); }
 }
-.group:hover .hero-ring-inner {
-  animation: ring-spin 6s linear infinite;
+
+/*
+  Clips (the Clip component): a silent looping video with a play/pause button in
+  its corner. The dark backing shows while the poster loads.
+*/
+.clip {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #0d0c11;
+}
+.clip > video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+.clip-toggle {
+  position: absolute;
+  left: 0.5rem;
+  bottom: 0.5rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background: rgb(17 17 19 / 0.72);
+  color: #fff;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 150ms ease;
+}
+.clip-toggle:hover,
+.clip-toggle:focus-visible {
+  opacity: 1;
+}
+.clip-toggle:focus-visible {
+  border-radius: 9999px;
+  outline-color: #fff;
+}
+.clip-icon-pause,
+.clip-toggle[data-state="playing"] .clip-icon-play {
+  display: none;
+}
+.clip-toggle[data-state="playing"] .clip-icon-pause {
+  display: block;
 }

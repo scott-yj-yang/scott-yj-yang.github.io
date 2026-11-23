@@ -7,23 +7,92 @@ arxiv: "https://arxiv.org/abs/2511.20532"
 tags: [JAX, MuJoCo, pose-estimation, imitation-learning, biomechanics]
 org: "Talmo Lab"
 order: 1
+featured: true
+headline: "Emulating behavior to understand the brain"
+cover: ../../assets/research/mimic-mjx-arena.jpg
+coverAlt: "Rendered body models of a hooded rat, a fruit fly, a stick insect, a translucent green C. elegans worm and a mouse forelimb with red muscles, posed on a blue checkered arena against black."
+coverCaption: "The five MIMIC-MJX body models, each posed from a frame of real motion."
+lede: "Behavior is a loop: the brain moves the body, the body acts on the world, and what the animal senses next depends on what it just did. In a freely moving animal we can record what comes out, but most of that loop stays hidden. MIMIC-MJX builds digital twins that close the loop in simulation, where every signal can be observed."
+clip:
+  src: /media/mimic-mjx-species.mp4
+  webm: /media/mimic-mjx-species.webm
+  poster: /media/mimic-mjx-species.jpg
+  width: 960
+  height: 540
+  alt: "Five animals in turn, each as video beside its MuJoCo body model, labelled first 'Registered trajectory' and then 'Kinematic replay': a rat in a green arena, a tethered fruit fly, a mouse forelimb reaching, a C. elegans worm and a stick insect."
+  caption: "A rat, a fruit fly, a mouse forelimb, a worm and a stick insect, each beside its biomechanical model."
 ---
 
-## Overview
+import Clip from "@/components/Clip.astro";
+import Figure from "@/components/Figure.astro";
+import LoopStep from "@/components/LoopStep.astro";
+import LoopLegend from "@/components/LoopLegend.astro";
+import pipeline from "@/assets/research/mimic-mjx-pipeline.png";
 
-MIMIC-MJX is a framework for neuromechanical emulation of animal behavior using massively parallel imitation learning in MuJoCo-MJX. It enables GPU-accelerated physics simulation of biomechanically realistic virtual animals that learn to reproduce naturalistic behavior from motion capture data.
+{/*
+  "Why study the whole loop?" follows the argument of my lab meeting talk (17 Nov 2026).
+  The description of MIMIC-MJX, its tools and the companion study follows the lab's
+  at talmolab.org/research.
+*/}
 
-The project encompasses two core tools:
+## Why study the whole loop?
 
-- **track-mjx** — GPU-accelerated neuromechanical pose estimation
-- **stac-mjx** — Skeletal tracking and calibration for MuJoCo body models
+How we picture behavior decides what we measure. Here are three pictures, each adding to the last.
 
-## Key contributions
+<LoopLegend />
 
-- Massively parallel imitation learning pipeline that scales across GPU clusters
-- Biomechanically realistic mouse body models with musculoskeletal actuation
-- Physics-aware constraints that promote naturalistic muscle activity patterns
-- Transfer learning from kinematic replay to task-driven behavior
+<LoopStep
+  step={1}
+  title="Behavior as choices"
+  text="The classic experiment treats behavior as a decision. A stimulus is shown, the animal reports a choice, and the brain is whatever links the two."
+/>
+
+<LoopStep
+  step={2}
+  title="Behavior as a feedforward process"
+  text="Movement adds a chain. The brain sends motor commands to the body, the body exerts forces on the world, and we record what comes out at either end: neural activity at the top, movement at the bottom."
+/>
+
+<LoopStep
+  step={3}
+  title="Behavior as a sensorimotor loop"
+  text="The chain is really a loop. The body reports back through proprioception, the world pushes back on the body, and what the animal senses next depends on what it just did. We can record the readouts, but the signals inside the loop stay largely hidden in a freely moving animal."
+/>
+
+Behavior has long been studied by opening this loop and looking at one piece at a time. It is time to close the loop and study it as a whole.
+
+## The approach: a digital twin
+
+A digital twin closes the loop in simulation: a model brain, a model body and a model world, running together, in which every signal can be observed. That makes it possible to run virtual experiments that would be out of reach in a freely moving animal.
+
+A twin is only useful if it matches the animal. That match spans several levels (brain, body, physics and behavior), and a virtual animal should align with the real one at most of them, depending on the question being asked.
+
+MIMIC-MJX is a framework for building digital twins that learn the neural computations required to imitate the body language of real animals. Deep neural networks are trained to work like the brain: they observe what a biological movement looks like, and are rewarded for producing the control signals that drive a biomechanical body, through physics simulation, to move the way the real animal did.
+
+Building on work from Google DeepMind and our collaborators at Harvard, we generalized the approach to work with any body model, adapted it to GPU-accelerated physics simulators, and validated it across behaviors, species and levels of biomechanical fidelity.
+
+There is early evidence that modeling the loop brings us closer to the brain. In a virtual rat trained to imitate real rats, the activity of the network that produced the behavior predicted neural activity in the striatum better than any feature of the animal's movement ([Aldarondo et al., *Nature*, 2024](https://doi.org/10.1038/s41586-024-07633-4)).
+
+## The pipeline
+
+MIMIC-MJX has two stages, each an open-source tool built on GPU-accelerated physics simulation.
+
+<Figure
+  src={pipeline}
+  alt="Three panels joined by two arrows. First, 3D markerless motion capture of a rat. An arrow labelled stac-mjx leads to joint positions and angles of a biomechanical model. An arrow labelled track-mjx leads to a neural network controlling the biomechanical model."
+  caption="From motion capture to a neural controller: stac-mjx registers the body model to the data, and track-mjx trains a network to drive it."
+/>
+
+1. **STAC-MJX** fits a body model to motion capture data. It is inverse kinematics on the GPU: markerless motion tracking goes in, and the pose of a physical body model comes out.
+2. **track-mjx** trains the control policies that imitate those movements, through motion imitation with deep reinforcement learning.
+
+<Clip {...frontmatter.clip} class="my-8" />
+
+Together they cover rodent, fruit fly, mouse arm, stick insect and worm models. Controllers trained this way are also a starting point for task-driven behavior, through transfer learning from kinematic replay.
+
+## Why biomechanics matter
+
+In a companion study, we trained neural control models to reproduce the movements of mice performing a dexterous reaching task. Models that controlled muscle-based actuators predicted recorded muscle activity better than models with less biologically realistic torque actuators: evidence that detailed biomechanics matter when modeling sensorimotor control ([Leonardis et al., NeurIPS Workshop 2025](https://arxiv.org/abs/2511.21848)).
 
 ## Publication
 
@@ -31,9 +100,13 @@ The project encompasses two core tools:
 C. Y. Zhang\*, Y. Yang\*, A. Sirbu\*, et al. *Nature Methods* (accepted in principle). \* Equal contribution.
 
 - [Preprint on arXiv](https://arxiv.org/abs/2511.20532)
-- [Live demo](https://mimic-mjx.talmolab.org)
+- [Project site and live demo](https://mimic-mjx.talmolab.org)
+- Related papers are listed under [Publications](/research#publications).
 
-## Code
+## Code and data
 
-- [talmolab/track-mjx](https://github.com/talmolab/track-mjx) — Main codebase
-- [talmolab/stac-mjx](https://github.com/talmolab/stac-mjx) — Skeletal tracking and calibration
+- [talmolab/track-mjx](https://github.com/talmolab/track-mjx): training control policies through motion imitation
+- [talmolab/stac-mjx](https://github.com/talmolab/stac-mjx): fitting body models to motion capture data
+- [MIMIC-MJX dataset](https://huggingface.co/datasets/talmolab/MIMIC-MJX) on Hugging Face
+
+Media on this page: Talmo Lab, from the MIMIC-MJX paper.

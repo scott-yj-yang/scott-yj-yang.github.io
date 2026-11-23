@@ -78,12 +78,16 @@ const sections = [
     <ul>
       {talks.map((talk) => (
         <TalkEntry
+          id={talk.id}
           title={talk.data.title}
           venue={talk.data.venue}
           date={talk.data.date}
           kind={talk.data.kind}
           poster={talk.data.poster}
           slides={talk.data.slides}
+          post={talk.data.post}
+          photo={talk.data.photo}
+          photoAlt={talk.data.photoAlt}
         />
       ))}
     </ul>

@@ -17,8 +17,8 @@ pnpm check        # type-check Astro files
 ## Content
 
 - **Papers:** `src/content/papers/` — one `.mdx` per publication. Set `selected: true` to show it on the home page; `note` adds text after the venue (for example `Oral`); `order` sets its position within its year, lowest first.
-- **Talks:** `src/content/talks/` — one `.mdx` per poster/talk
-- **Research software:** `src/content/research-code/` — one `.mdx` per tool
+- **Talks:** `src/content/talks/` — one `.mdx` per poster/talk. The home page lists the three newest. Optional `photo` (a 4:3 image in `src/assets/talks/`, with `photoAlt`) adds a "Photo" toggle that opens the picture; `post` links to a post about it.
+- **Research software:** `src/content/research-code/` — one `.mdx` per tool. `featured: true` puts one at the top of the home page: its `headline` and `lede` on the left, its `cover` image on the right, and its `clip` (a short silent video in `public/media/`: MP4, optional WebM, and a poster image) underneath. On the project's own page the headline and cover lead, and the text places the clip with `<Clip {...frontmatter.clip} />`.
 - **Projects:** `src/content/projects/` — one `.mdx` per side project
 - **Writing:** `src/content/writing/` — blog posts in MDX
 - **News:** `src/content/news/` — short dated items for the home page
@@ -31,7 +31,14 @@ One typeface (Inter), one accent colour, thin rules instead of cards. The colour
 tokens at the top of `src/styles/global.css`, with dark-mode values beside them; pages
 use them through utilities such as `text-muted`, `text-faint`, `border-rule` and
 `text-accent`. Shared pieces are in `src/components/`: `Section` (a labelled section),
-`PubItem`, `TalkEntry`, `NewsItem`, `LinkList`, `Tags` and `Prose` (long-form text).
+`PubItem`, `TalkEntry`, `NewsItem`, `LinkList`, `Tags`, `Prose` (long-form text), `Clip` (a looping
+video that plays only while on screen) and `Figure` (an image with a caption, for MDX pages).
+`LoopDiagram`, `LoopStep` and `LoopLegend` draw the three-step sensorimotor-loop diagram on the
+MIMIC-MJX page; the drawing is SVG that takes its colours from the same tokens.
+
+The home page portrait is a button: pressing it slides a trans flag out from behind its
+upper-right corner, and pressing again tucks it back. Its styles are the `.portrait-*`
+rules in `global.css`; the click handler is at the end of `src/pages/index.astro`.
 
 ## Sync publications
 

@@ -1,0 +1,24 @@
+---
+/** A still image with a caption, for use inside MDX pages. Import the image, then pass it as `src`. */
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  caption?: string;
+  class?: string;
+}
+
+const { src, alt, caption, class: className } = Astro.props;
+---
+<figure class:list={["not-prose my-8", className]}>
+  <Image
+    src={src}
+    alt={alt}
+    widths={[720, 1440]}
+    sizes="(min-width: 768px) 720px, 100vw"
+    class="w-full rounded-lg"
+  />
+  {caption && <figcaption class="mt-2.5 text-sm leading-relaxed text-faint">{caption}</figcaption>}
+</figure>

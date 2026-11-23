@@ -1,0 +1,32 @@
+---
+/** The key to the loop drawings' three kinds of arrow. For MDX pages. */
+const items = [
+  { kind: "input", label: "Input" },
+  { kind: "internal", label: "Inside the loop" },
+  { kind: "readout", label: "Readout: what we can record" },
+];
+---
+<ul class="not-prose mb-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted">
+  {items.map((item) => (
+    <li class="flex items-center gap-2">
+      <svg viewBox="0 0 26 10" width="26" height="10" aria-hidden="true" class={`key key-${item.kind}`}>
+        <line x1="1" y1="5" x2="18" y2="5" />
+        <path d="M17 1 25 5 17 9z" />
+      </svg>
+      {item.label}
+    </li>
+  ))}
+</ul>
+
+<style>
+  .key line {
+    stroke-width: 1.75;
+    stroke-linecap: round;
+  }
+  .key-input line { stroke: var(--color-faint); }
+  .key-input path { fill: var(--color-faint); }
+  .key-internal line { stroke: var(--color-ink); }
+  .key-internal path { fill: var(--color-ink); }
+  .key-readout line { stroke: var(--color-accent); }
+  .key-readout path { fill: var(--color-accent); }
+</style>

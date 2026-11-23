@@ -1,0 +1,152 @@
+---
+/**
+ * The sensorimotor loop, drawn in three steps:
+ *   1. behavior as choices        stimulus -> brain -> choice
+ *   2. behavior as a feedforward process   brain -> body -> world, read out at each end
+ *   3. behavior as a sensorimotor loop     the same, with proprioception and feedback
+ *
+ * Three kinds of arrow: input (grey), inside the loop (ink) and readout (accent).
+ * Colours come from the site's tokens, so the drawing follows light and dark mode.
+ */
+interface Props {
+  step: 1 | 2 | 3;
+  class?: string;
+}
+
+const { step, class: className } = Astro.props;
+
+const description = {
+  1: "A stimulus goes into the brain and a choice comes out.",
+  2: "The brain sends a motor command to the body, and the body exerts force on the world. A stimulus enters from the world. Neural activity is read out from the brain and kinematics from the world.",
+  3: "The brain sends a motor command to the body, and the body exerts force on the world. The world feeds back to the body, and the body reports to the brain through proprioception. A stimulus enters from the world. Neural activity, muscle activations and kinematics are read out; the signals inside the loop are not.",
+}[step];
+
+// Geometry, in the drawing's own units.
+const box = { x: 72, w: 132, h: 50 };
+const cx = box.x + box.w / 2;
+const right = box.x + box.w;
+const rows = { brain: 8, body: 106, world: 204 };
+const mid = (y: number) => y + box.h / 2;
+const down = cx - 18; // x of the downward arrows
+const up = cx + 18; // x of the upward arrows
+const height = step === 1 ? 66 : 262;
+const id = (name: string) => `loop-${name}-${step}`;
+---
+<svg
+  viewBox={`0 0 304 ${height}`}
+  role="img"
+  aria-label={description}
+  class:list={["loop-diagram", className]}
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <defs>
+    {["internal", "readout", "input"].map((kind) => (
+      <marker id={id(kind)} viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 10 5 0 10z" class={`head-${kind}`} />
+      </marker>
+    ))}
+  </defs>
+
+  <!-- Brain: in every step -->
+  <rect x={box.x} y={rows.brain} width={box.w} height={box.h} rx="8" class="box" />
+  <text x={cx} y={rows.brain + 22} class="name">Brain</text>
+  <text x={cx} y={rows.brain + 37} class="sub">central nervous system</text>
+
+  {step === 1 ? (
+    <>
+      <text x="44" y={mid(rows.brain) + 4} class="label input end">stimulus</text>
+      <line x1="48" y1={mid(rows.brain)} x2={box.x - 3} y2={mid(rows.brain)} class="arrow input" marker-end={`url(#${id("input")})`} />
+      <line x1={right + 2} y1={mid(rows.brain)} x2={right + 28} y2={mid(rows.brain)} class="arrow readout" marker-end={`url(#${id("readout")})`} />
+      <text x={right + 34} y={mid(rows.brain) + 4} class="label readout">choice</text>
+    </>
+  ) : (
+    <>
+      <rect x={box.x} y={rows.body} width={box.w} height={box.h} rx="8" class="box" />
+      <text x={cx} y={rows.body + 22} class="name">Body</text>
+      <text x={cx} y={rows.body + 37} class="sub">musculoskeletal system</text>
+
+      <rect x={box.x} y={rows.world} width={box.w} height={box.h} rx="8" class="box" />
+      <text x={cx} y={rows.world + 22} class="name">World</text>
+      <text x={cx} y={rows.world + 37} class="sub">external environment</text>
+
+      <!-- Down the chain: motor command, force -->
+      <line x1={down} y1={rows.brain + box.h + 2} x2={down} y2={rows.body - 3} class="arrow internal" marker-end={`url(#${id("internal")})`} />
+      <text x={down - 8} y={rows.brain + box.h + 21} class="label internal end">motor</text>
+      <text x={down - 8} y={rows.brain + box.h + 33} class="label internal end">command</text>
+      <line x1={down} y1={rows.body + box.h + 2} x2={down} y2={rows.world - 3} class="arrow internal" marker-end={`url(#${id("internal")})`} />
+      <text x={down - 8} y={rows.body + box.h + 27} class="label internal end">force</text>
+
+      {step === 3 && (
+        <>
+          <!-- Back up: feedback, proprioception -->
+          <line x1={up} y1={rows.world - 2} x2={up} y2={rows.body + box.h + 3} class="arrow internal" marker-end={`url(#${id("internal")})`} />
+          <text x={up + 8} y={rows.body + box.h + 27} class="label internal">feedback</text>
+          <line x1={up} y1={rows.body - 2} x2={up} y2={rows.brain + box.h + 3} class="arrow internal" marker-end={`url(#${id("internal")})`} />
+          <text x={up + 8} y={rows.brain + box.h + 27} class="label internal">proprioception</text>
+        </>
+      )}
+
+      <!-- Input: the stimulus arrives from the world -->
+      <text x="44" y={mid(rows.world) + 4} class="label input end">stimulus</text>
+      <line x1="48" y1={mid(rows.world)} x2={box.x - 3} y2={mid(rows.world)} class="arrow input" marker-end={`url(#${id("input")})`} />
+
+      <!-- Readouts: what an experiment can record -->
+      <line x1={right + 2} y1={mid(rows.brain)} x2={right + 28} y2={mid(rows.brain)} class="arrow readout" marker-end={`url(#${id("readout")})`} />
+      <text x={right + 34} y={mid(rows.brain) - 2} class="label readout">neural</text>
+      <text x={right + 34} y={mid(rows.brain) + 10} class="label readout">activity</text>
+      {step === 3 && (
+        <>
+          <line x1={right + 2} y1={mid(rows.body)} x2={right + 28} y2={mid(rows.body)} class="arrow readout" marker-end={`url(#${id("readout")})`} />
+          <text x={right + 34} y={mid(rows.body) - 2} class="label readout">muscle</text>
+          <text x={right + 34} y={mid(rows.body) + 10} class="label readout">activations</text>
+        </>
+      )}
+      <line x1={right + 2} y1={mid(rows.world)} x2={right + 28} y2={mid(rows.world)} class="arrow readout" marker-end={`url(#${id("readout")})`} />
+      <text x={right + 34} y={mid(rows.world) + 4} class="label readout">kinematics</text>
+    </>
+  )}
+</svg>
+
+<style>
+  .loop-diagram {
+    display: block;
+    height: auto;
+    font-family: inherit;
+  }
+  .box {
+    fill: var(--color-paper);
+    stroke: var(--color-rule);
+    stroke-width: 1.5;
+  }
+  .name {
+    font-size: 13px;
+    font-weight: 600;
+    text-anchor: middle;
+    fill: var(--color-ink);
+  }
+  .sub {
+    font-size: 9.5px;
+    text-anchor: middle;
+    fill: var(--color-faint);
+  }
+  .label {
+    font-size: 11px;
+  }
+  .end {
+    text-anchor: end;
+  }
+  .arrow {
+    fill: none;
+    stroke-width: 1.75;
+    stroke-linecap: round;
+  }
+  .arrow.internal { stroke: var(--color-ink); }
+  .arrow.readout { stroke: var(--color-accent); }
+  .arrow.input { stroke: var(--color-faint); }
+  .label.internal { fill: var(--color-ink); }
+  .label.readout { fill: var(--color-accent); }
+  .label.input { fill: var(--color-muted); }
+  .head-internal { fill: var(--color-ink); }
+  .head-readout { fill: var(--color-accent); }
+  .head-input { fill: var(--color-faint); }
+</style>
