@@ -5,9 +5,10 @@ import Section from "@/components/Section.astro";
 import PubItem from "@/components/PubItem.astro";
 import TalkEntry from "@/components/TalkEntry.astro";
 import LinkList from "@/components/LinkList.astro";
+import { comparePapers } from "@/lib/papers";
 
 const papers = (await getCollection("papers", ({ data }) => !data.draft))
-  .sort((a, b) => b.data.year - a.data.year || (b.data.month ?? 0) - (a.data.month ?? 0));
+  .sort(comparePapers);
 const hasCoFirst = papers.some((p) => p.data.authors.some((a) => a.isCoFirst));
 
 const software = (await getCollection("research-code", ({ data }) => !data.draft))

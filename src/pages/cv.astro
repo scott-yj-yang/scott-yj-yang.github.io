@@ -1,55 +1,106 @@
 ---
+import { getCollection } from "astro:content";
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import Section from "@/components/Section.astro";
+import PubItem from "@/components/PubItem.astro";
+import TalkEntry from "@/components/TalkEntry.astro";
+import LinkList from "@/components/LinkList.astro";
+import { comparePapers } from "@/lib/papers";
 
+/*
+  The web CV follows the PDF section for section. Publications and presentations
+  come from the same content entries as the Research page, so they cannot drift
+  apart; the other sections are the lists below. Update both when the PDF changes.
+*/
 const pdf = "/cv/Yuanjia-Scott-Yang-CV.pdf";
+
+const papers = (await getCollection("papers", ({ data }) => !data.draft)).sort(comparePapers);
+const hasCoFirst = papers.some((p) => p.data.authors.some((a) => a.isCoFirst));
+
+const talks = (await getCollection("talks", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
 const education = [
   {
-    degree: "Ph.D. in Neuroscience",
+    title: "Ph.D. in Neuroscience",
     dates: "Sept 2025 – Present",
     lines: [
       "UC San Diego · Talmo Pereira Lab, Salk Institute for Biological Studies",
-      "Focus: Computational Neuroscience, Neuromechanical Modeling, Deep RL",
+      "Research focus: Computational Neuroscience, Neuromechanical Modeling, Deep Reinforcement Learning",
       "Funding: NIH BRAIN U01 (1U01NS136507)",
     ],
   },
   {
-    degree: "M.S. in Computer Science and Engineering — AI",
+    title: "M.S. in Computer Science and Engineering, Artificial Intelligence",
     dates: "Sept 2023 – Mar 2025",
     lines: [
       "UC San Diego",
-      "Thesis: VNL-Ray: Biomechanically Realistic Virtual Rodent Behavior and Task Learning via Deep RL",
+      "Thesis: VNL-Ray: Biomechanically Realistic Virtual Rodent Behavior and Task Learning via Deep Reinforcement Learning",
     ],
   },
   {
-    degree: "B.S. in Data Science & Cognitive Science",
+    title: "B.S. in Data Science & Cognitive Science",
     dates: "Sept 2019 – Mar 2023",
     lines: ["UC San Diego · GPA: 3.94/4 · Magna Cum Laude · Provost's Honor"],
   },
 ];
 
-const skills = [
-  { area: "Programming", items: "Python, JAX, JavaScript, R, MATLAB, Java, SQL, LaTeX" },
-  { area: "ML/RL", items: "TensorFlow, PyTorch, Stable-Baselines3, Brax" },
-  { area: "Simulation", items: "MuJoCo, MuJoCo-MJX, STAC-MJX" },
-  { area: "Infrastructure", items: "Ray, GPU/TPU computing, Docker, Git" },
-  { area: "Data", items: "NumPy, SciPy, Pandas, Matplotlib, Scikit-learn" },
+const research = [
+  {
+    title: "Graduate Research Assistant",
+    dates: "Sept 2023 – Present",
+    lines: ["Talmo Pereira Lab · Salk Institute for Biological Studies"],
+    bullets: [
+      "Skills: GPU-accelerated simulation via JAX/MuJoCo-MJX, distributed training via Ray, deep reinforcement learning, imitation learning.",
+      "Developing neuromechanical simulation frameworks for studying biological motor control in virtual animals with biomechanically realistic body models, bridging reinforcement learning, biomechanics, and neuroscience.",
+      "Built distributed training systems for large-scale physics simulations, enabling vision-guided, task-driven RL for virtual rodents. Designed transfer learning approaches from kinematic replay to task-driven behavior.",
+    ],
+  },
 ];
 
-const teaching = [
-  "COGS 188 — Reinforcement Learning (Sp24)",
-  "COGS 118B — Unsupervised Machine Learning (Wi23)",
-  "COGS 118A — Supervised Machine Learning (Sp23, Wi23, Sp22)",
-  "COGS 108 — Data Science in Practice (Fa24, Fa23, Sp23, Wi22)",
-  "DSC 30 — Data Structures & Algorithms (Wi22, Fa21, Su21, Sp21)",
-  "COGS 18 — Introduction to Python (Wi21)",
-  "DSC 10 — Principles of Data Science (Su21)",
+const teaching = {
+  title: "Teaching Assistant",
+  place: "Department of Cognitive Science · Halıcıoğlu Data Science Institute, UC San Diego",
+  courses: [
+    "COGS 188 — Reinforcement Learning (Sp24)",
+    "COGS 118B — Unsupervised Machine Learning (Wi23)",
+    "COGS 118A — Supervised Machine Learning (Sp23, Wi23, Sp22)",
+    "COGS 108 — Data Science in Practice (Fa24, Fa23, Sp23, Wi22)",
+    "DSC 30 — Data Structures & Algorithms (Wi22, Fa21, Su21, Sp21)",
+    "COGS 18 — Introduction to Python (Wi21)",
+    "DSC 10 — Principles of Data Science (Su21)",
+  ],
+  notes: [
+    "Contribution: Designed lecture slides and programming and conceptual assignments. Actively engaged with students through guest lecturing, office hours, and grading.",
+    "Feedback: Consistently received positive feedback from students and high marks on professors' evaluation forms.",
+  ],
+};
+
+const skills = [
+  { area: "Programming", items: "Python, JAX, JavaScript, R, MATLAB, Java, SQL, LaTeX" },
+  { area: "ML/RL frameworks", items: "TensorFlow, PyTorch, Stable-Baselines3, Brax" },
+  { area: "Simulation & physics", items: "MuJoCo, MuJoCo-MJX, STAC-MJX" },
+  { area: "Infrastructure", items: "Ray (distributed computing), GPU/TPU computing, Docker, Git/GitHub" },
+  { area: "Data & visualization", items: "NumPy, SciPy, Pandas, Matplotlib, Scikit-learn" },
 ];
 
 const honors = [
-  { name: "Magna Cum Laude", date: "Mar 2023" },
-  { name: "UC Scholars", detail: "Summer Research Scholarship", date: "Summer 2022" },
+  { title: "Magna Cum Laude", dates: "Mar 2023", lines: ["UC San Diego"] },
+  {
+    title: "UC Scholars",
+    dates: "Summer 2022",
+    lines: ["Summer Research Scholarship awarded for excellent undergraduate research"],
+  },
+];
+
+const sections = [
+  { label: "Education", href: "#education" },
+  { label: "Publications", href: "#publications" },
+  { label: "Presentations", href: "#presentations" },
+  { label: "Research", href: "#research-experience" },
+  { label: "Teaching", href: "#teaching" },
+  { label: "Skills", href: "#skills" },
+  { label: "Honors", href: "#honors" },
 ];
 ---
 <BaseLayout title="CV" description="Curriculum vitae of Yuanjia (Scott) Yang.">
@@ -59,16 +110,14 @@ const honors = [
       Download PDF <span aria-hidden="true">↓</span>
     </a>
   </div>
-  <p class="mt-3 text-muted">
-    Publications and talks are on the <a href="/research" class="link">Research</a> page.
-  </p>
+  <LinkList links={sections} class="mt-4" />
 
-  <Section title="Education" class="mt-12">
+  <Section id="education" title="Education and training" class="mt-12">
     <ul>
       {education.map((item) => (
         <li class="border-b border-rule py-5 last:border-b-0">
           <div class="flex flex-wrap items-baseline justify-between gap-x-4">
-            <h3 class="font-medium text-ink">{item.degree}</h3>
+            <h3 class="font-medium text-ink">{item.title}</h3>
             <span class="text-sm tabular-nums text-faint">{item.dates}</span>
           </div>
           {item.lines.map((line) => (
@@ -79,10 +128,70 @@ const honors = [
     </ul>
   </Section>
 
-  <Section title="Technical skills" class="mt-14">
+  <Section id="publications" title="Publications" class="mt-14">
+    <ul>
+      {papers.map((paper, i) => (
+        <PubItem
+          paper={paper.data}
+          meta={String(paper.data.year)}
+          repeatMeta={i > 0 && papers[i - 1].data.year === paper.data.year}
+        />
+      ))}
+    </ul>
+    {hasCoFirst && <p class="mt-1 text-xs text-faint">* Equal contribution</p>}
+  </Section>
+
+  <Section id="presentations" title="Conferences and presentations" class="mt-14">
+    <ul>
+      {talks.map((talk) => (
+        <TalkEntry
+          title={talk.data.title}
+          venue={talk.data.venue}
+          date={talk.data.date}
+          kind={talk.data.kind}
+          poster={talk.data.poster}
+          slides={talk.data.slides}
+        />
+      ))}
+    </ul>
+  </Section>
+
+  <Section id="research-experience" title="Research experience" class="mt-14">
+    <ul>
+      {research.map((item) => (
+        <li class="border-b border-rule py-5 last:border-b-0">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-4">
+            <h3 class="font-medium text-ink">{item.title}</h3>
+            <span class="text-sm tabular-nums text-faint">{item.dates}</span>
+          </div>
+          {item.lines.map((line) => (
+            <p class="mt-1 text-sm leading-relaxed text-muted">{line}</p>
+          ))}
+          <ul class="mt-3 list-disc space-y-2 pl-5 text-sm leading-relaxed text-ink marker:text-faint">
+            {item.bullets.map((bullet) => <li>{bullet}</li>)}
+          </ul>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section id="teaching" title="Teaching & mentorship" class="mt-14">
+    <div class="py-5">
+      <h3 class="font-medium text-ink">{teaching.title}</h3>
+      <p class="mt-1 text-sm leading-relaxed text-muted">{teaching.place}</p>
+      <ul class="mt-3 space-y-1.5 text-sm text-ink">
+        {teaching.courses.map((course) => <li>{course}</li>)}
+      </ul>
+      <ul class="mt-4 list-disc space-y-2 pl-5 text-sm leading-relaxed text-ink marker:text-faint">
+        {teaching.notes.map((note) => <li>{note}</li>)}
+      </ul>
+    </div>
+  </Section>
+
+  <Section id="skills" title="Technical skills" class="mt-14">
     <dl class="py-3">
       {skills.map((skill) => (
-        <div class="grid gap-x-6 py-2 text-sm sm:grid-cols-[7.5rem_1fr]">
+        <div class="grid gap-x-6 py-2 text-sm sm:grid-cols-[10rem_1fr]">
           <dt class="font-medium text-ink">{skill.area}</dt>
           <dd class="text-muted">{skill.items}</dd>
         </div>
@@ -90,28 +199,19 @@ const honors = [
     </dl>
   </Section>
 
-  <Section title="Teaching" class="mt-14">
-    <p class="pt-5 text-sm text-muted">Teaching Assistant, UC San Diego</p>
-    <ul class="mt-3 space-y-1.5 pb-2 text-sm text-ink">
-      {teaching.map((course) => <li>{course}</li>)}
-    </ul>
-  </Section>
-
-  <Section title="Honors & awards" class="mt-14">
+  <Section id="honors" title="Honors and awards" class="mt-14">
     <ul>
       {honors.map((item) => (
-        <li class="flex flex-wrap items-baseline justify-between gap-x-4 border-b border-rule py-4 last:border-b-0">
-          <div>
-            <h3 class="font-medium text-ink">{item.name}</h3>
-            {item.detail && <p class="mt-1 text-sm text-muted">{item.detail}</p>}
+        <li class="border-b border-rule py-4 last:border-b-0">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-4">
+            <h3 class="font-medium text-ink">{item.title}</h3>
+            <span class="text-sm tabular-nums text-faint">{item.dates}</span>
           </div>
-          <span class="text-sm tabular-nums text-faint">{item.date}</span>
+          {item.lines.map((line) => (
+            <p class="mt-1 text-sm leading-relaxed text-muted">{line}</p>
+          ))}
         </li>
       ))}
     </ul>
   </Section>
-
-  <p class="mt-12 text-sm text-faint">
-    Full details are in the <a href={pdf} target="_blank" rel="noopener noreferrer" class="link">PDF version</a>.
-  </p>
 </BaseLayout>

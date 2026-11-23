@@ -13,6 +13,8 @@ const papers = defineCollection({
     venue: z.string(),
     year: z.number(),
     month: z.number().optional(),
+    /** Position within its year, lowest first, as the CV lists them. Papers without it follow, newest month first. */
+    order: z.number().optional(),
     /** Shown after the venue, e.g. "Oral" or "Accepted in principle". */
     note: z.string().optional(),
     status: z.enum(["published", "accepted", "under-review", "preprint", "thesis", "workshop"]),

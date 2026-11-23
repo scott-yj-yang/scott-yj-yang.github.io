@@ -6,10 +6,11 @@ import Section from "@/components/Section.astro";
 import PubItem from "@/components/PubItem.astro";
 import NewsItem from "@/components/NewsItem.astro";
 import { site } from "@/data/site";
+import { comparePapers } from "@/lib/papers";
 import heroImage from "@/assets/scott-hero.jpg";
 
 const selectedPapers = (await getCollection("papers", ({ data }) => !data.draft && data.selected))
-  .sort((a, b) => b.data.year - a.data.year || (b.data.month ?? 0) - (a.data.month ?? 0));
+  .sort(comparePapers);
 const hasCoFirst = selectedPapers.some((p) => p.data.authors.some((a) => a.isCoFirst));
 
 const recentNews = (await getCollection("news"))
