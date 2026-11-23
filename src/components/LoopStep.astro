@@ -1,0 +1,23 @@
+---
+/**
+ * One step of the sensorimotor-loop argument: the text on the left, the drawing
+ * for that step on the right (stacked on a phone, text first). For MDX pages.
+ */
+import LoopDiagram from "./LoopDiagram.astro";
+
+interface Props {
+  step: 1 | 2 | 3;
+  title: string;
+  text: string;
+}
+
+const { step, title, text } = Astro.props;
+---
+<div class="not-prose grid items-center gap-x-12 gap-y-5 border-t border-rule py-7 sm:grid-cols-2">
+  <div>
+    <p class="text-sm tabular-nums text-faint">{step} of 3</p>
+    <h3 class="mt-1 text-lg font-medium leading-snug text-ink">{title}</h3>
+    <p class="mt-2 text-[0.9375rem] leading-relaxed text-muted">{text}</p>
+  </div>
+  <LoopDiagram step={step} class="mx-auto w-full max-w-[20rem]" />
+</div>

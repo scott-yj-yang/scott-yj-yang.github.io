@@ -4,7 +4,7 @@ import { site, demos } from "@/data/site";
 
 const path = Astro.url.pathname;
 const under = (href: string) => path === href || path.startsWith(`${href}/`);
-// The course demos are listed on Projects, wherever their own address sits.
+// The course demos are listed on Side Projects, wherever their own address sits.
 const onDemo = demos.some((demo) => under(demo.href));
 const isCurrent = (href: string) => (onDemo ? href === "/projects" : under(href));
 ---

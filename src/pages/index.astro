@@ -5,6 +5,9 @@ import BaseLayout from "@/layouts/BaseLayout.astro";
 import Section from "@/components/Section.astro";
 import PubItem from "@/components/PubItem.astro";
 import NewsItem from "@/components/NewsItem.astro";
+import TalkEntry from "@/components/TalkEntry.astro";
+import Clip from "@/components/Clip.astro";
+import LinkList from "@/components/LinkList.astro";
 import { site } from "@/data/site";
 import { comparePapers } from "@/lib/papers";
 import heroImage from "@/assets/scott-hero.jpg";
@@ -12,6 +15,23 @@ import heroImage from "@/assets/scott-hero.jpg";
 const selectedPapers = (await getCollection("papers", ({ data }) => !data.draft && data.selected))
   .sort(comparePapers);
 const hasCoFirst = selectedPapers.some((p) => p.data.authors.some((a) => a.isCoFirst));
+
+// The project shown, with its clip, under the introduction.
+const featured = (await getCollection("research-code", ({ data }) => !data.draft && data.featured))
+  .sort((a, b) => a.data.order - b.data.order)[0];
+const featuredLinks = featured
+  ? [
+      { label: "Overview", href: `/research/${featured.id}` },
+      featured.data.arxiv && { label: "Paper", href: featured.data.arxiv },
+      { label: "Code", href: featured.data.repo },
+      featured.data.demo && { label: "Live demo", href: featured.data.demo },
+    ].filter((l): l is { label: string; href: string } => Boolean(l))
+  : [];
+
+// The three most recent talks and posters.
+const recentTalks = (await getCollection("talks", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
 
 const recentNews = (await getCollection("news"))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
@@ -27,21 +47,30 @@ const interests = ["neuroAI", "motor control", "biomechanics", "deep RL", "virtu
     the right with the links under it.
   -->
   <section class="grid items-start gap-x-12 gap-y-6 sm:grid-cols-[minmax(0,1fr)_15rem] sm:grid-rows-[auto_1fr]">
-    <div class="group relative justify-self-start sm:col-start-2 sm:row-start-1 sm:justify-self-center">
-      <div class="hero-ring hero-ring-outer absolute inset-0 rounded-full opacity-0 group-hover:opacity-100"></div>
-      <div class="hero-ring hero-ring-mid absolute inset-0 rounded-full opacity-0 group-hover:opacity-100"></div>
-      <div class="hero-ring hero-ring-inner absolute inset-0 rounded-full opacity-0 group-hover:opacity-100"></div>
-      <div class="relative rounded-full p-1">
+    <!--
+      The portrait is a button: press it and a trans flag slides out from behind
+      its upper-right corner; press again and it tucks back in. Styles are in
+      global.css (.portrait-*), the click handler is at the end of this file.
+    -->
+    <div class="relative justify-self-start sm:col-start-2 sm:row-start-1 sm:justify-self-center">
+      <button
+        type="button"
+        class="portrait-button"
+        data-portrait
+        aria-pressed="false"
+        aria-label={`Portrait of ${site.name}. Press to show the trans pride flag.`}
+      >
         <Image
           src={heroImage}
-          alt={`Portrait of ${site.name}`}
+          alt=""
           width={416}
           height={416}
           quality={90}
           loading="eager"
-          class="h-40 w-40 rounded-full border-2 border-paper object-cover sm:h-52 sm:w-52"
+          class="aspect-square w-40 rounded-lg object-cover sm:w-52"
         />
-      </div>
+      </button>
+      <span class="portrait-flag" aria-hidden="true"><span class="portrait-flag-wave">🏳️‍⚧️</span></span>
     </div>
 
     <div class="min-w-0 sm:col-start-1 sm:row-span-2 sm:row-start-1">
@@ -71,6 +100,53 @@ const interests = ["neuroAI", "motor control", "biomechanics", "deep RL", "virtu
     </div>
   </section>
 
+  <!--
+    Featured project: the project's name and headline lead, text on the left and
+    the render on the right (stacked on a phone, text first). The clip comes
+    after, once the reader knows what it shows.
+  -->
+  {featured && (
+    <Section title="Featured project" href={`/research/${featured.id}`} linkLabel="Project overview" class="mt-16">
+      <div class="grid items-start gap-x-12 gap-y-6 pt-6 sm:grid-cols-2">
+        <div class="min-w-0">
+          {featured.data.headline ? (
+            <>
+              <a href={`/research/${featured.id}`} class="link text-sm font-medium">{featured.data.title}</a>
+              <h3 class="mt-2 text-2xl font-semibold leading-tight tracking-tight text-ink">
+                {featured.data.headline}
+              </h3>
+            </>
+          ) : (
+            <h3 class="text-2xl font-semibold leading-tight tracking-tight text-ink">
+              <a href={`/research/${featured.id}`} class="hover:text-accent">{featured.data.title}</a>
+            </h3>
+          )}
+          <p class="mt-3 text-[0.9375rem] leading-relaxed text-muted">
+            {featured.data.lede ?? featured.data.blurb}
+          </p>
+          <LinkList links={featuredLinks} class="mt-4" />
+        </div>
+        {featured.data.cover && (
+          <figure>
+            <a href={`/research/${featured.id}`} class="block">
+              <Image
+                src={featured.data.cover}
+                alt={featured.data.coverAlt ?? ""}
+                widths={[360, 720]}
+                sizes="(min-width: 640px) 340px, 100vw"
+                class="w-full rounded-lg"
+              />
+            </a>
+            {featured.data.coverCaption && (
+              <figcaption class="mt-2.5 text-sm leading-relaxed text-faint">{featured.data.coverCaption}</figcaption>
+            )}
+          </figure>
+        )}
+      </div>
+      {featured.data.clip && <Clip {...featured.data.clip} class="mt-10" />}
+    </Section>
+  )}
+
   <!-- Selected publications -->
   <Section title="Selected publications" href="/research" linkLabel="All research" class="mt-16">
     <ul>
@@ -79,6 +155,26 @@ const interests = ["neuroAI", "motor control", "biomechanics", "deep RL", "virtu
       ))}
     </ul>
     {hasCoFirst && <p class="mt-1 text-xs text-faint">* Equal contribution</p>}
+  </Section>
+
+  <!-- Presentations: the most recent talks and posters -->
+  <Section title="Presentations" href="/research#talks" linkLabel="All talks & posters" class="mt-14">
+    <ul>
+      {recentTalks.map((talk) => (
+        <TalkEntry
+          id={talk.id}
+          title={talk.data.title}
+          venue={talk.data.venue}
+          date={talk.data.date}
+          kind={talk.data.kind}
+          poster={talk.data.poster}
+          slides={talk.data.slides}
+          post={talk.data.post}
+          photo={talk.data.photo}
+          photoAlt={talk.data.photoAlt}
+        />
+      ))}
+    </ul>
   </Section>
 
   <!-- News -->
@@ -95,3 +191,16 @@ const interests = ["neuroAI", "motor control", "biomechanics", "deep RL", "virtu
     </ul>
   </Section>
 </BaseLayout>
+
+<script is:inline>
+  // One listener on the document, so it keeps working after client-side navigation.
+  if (!window.__portraitFlag) {
+    window.__portraitFlag = true;
+    document.addEventListener("click", function (event) {
+      var button = event.target.closest("[data-portrait]");
+      if (!button) return;
+      var shown = button.getAttribute("aria-pressed") === "true";
+      button.setAttribute("aria-pressed", String(!shown));
+    });
+  }
+</script>

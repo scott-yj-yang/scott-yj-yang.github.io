@@ -37,16 +37,25 @@ const papers = defineCollection({
 
 const talks = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/talks" }),
-  schema: z.object({
-    title: z.string(),
-    venue: z.string(),
-    date: z.coerce.date(),
-    kind: z.enum(["poster", "talk", "invited"]),
-    poster: z.string().optional(),
-    slides: z.string().optional(),
-    paper: z.string().optional(),
-    draft: z.boolean().default(false),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      venue: z.string(),
+      date: z.coerce.date(),
+      kind: z.enum(["poster", "talk", "invited"]),
+      poster: z.string().optional(),
+      slides: z.string().optional(),
+      /** A post about the event, such as a LinkedIn post. */
+      post: z.string().optional(),
+      /**
+       * A photo from the event, cropped to 4:3. A path relative to the entry,
+       * e.g. ../../assets/talks/name.jpg. Shown when the entry's Photo toggle is opened.
+       */
+      photo: image().optional(),
+      photoAlt: z.string().optional(),
+      paper: z.string().optional(),
+      draft: z.boolean().default(false),
+    }),
 });
 
 const projects = defineCollection({
@@ -66,17 +75,40 @@ const projects = defineCollection({
 
 const researchCode = defineCollection({
   loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/research-code" }),
-  schema: z.object({
-    title: z.string(),
-    blurb: z.string(),
-    repo: z.string(),
-    demo: z.string().optional(),
-    arxiv: z.string().optional(),
-    tags: z.array(z.string()).default([]),
-    org: z.string(),
-    order: z.number().default(99),
-    draft: z.boolean().default(false),
-  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string(),
+      blurb: z.string(),
+      repo: z.string(),
+      demo: z.string().optional(),
+      arxiv: z.string().optional(),
+      tags: z.array(z.string()).default([]),
+      org: z.string(),
+      order: z.number().default(99),
+      /** Show this project at the top of the home page. One at a time. */
+      featured: z.boolean().default(false),
+      /** The line that sells the project: the headline of the home page feature and of its own page. */
+      headline: z.string().optional(),
+      /** One or two sentences for the home page feature. Falls back to the blurb. */
+      lede: z.string().optional(),
+      /** The lead image: a path relative to the entry, e.g. ../../assets/research/name.jpg. */
+      cover: image().optional(),
+      coverAlt: z.string().optional(),
+      coverCaption: z.string().optional(),
+      /** A short silent video in public/media/. The home page feature shows it under the text and image. */
+      clip: z
+        .object({
+          src: z.string(),
+          webm: z.string().optional(),
+          poster: z.string(),
+          width: z.number(),
+          height: z.number(),
+          alt: z.string(),
+          caption: z.string().optional(),
+        })
+        .optional(),
+      draft: z.boolean().default(false),
+    }),
 });
 
 const writing = defineCollection({

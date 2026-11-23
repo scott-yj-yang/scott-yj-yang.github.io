@@ -9,7 +9,7 @@ export const site = {
   funding: "Research supported by NIH BRAIN U01 (1U01NS136507)",
   nav: [
     { label: "Research", href: "/research" },
-    { label: "Projects", href: "/projects" },
+    { label: "Side Projects", href: "/projects" },
     { label: "Writing", href: "/writing" },
     { label: "CV", href: "/cv" },
   ],
@@ -23,7 +23,7 @@ export const site = {
 
 /**
  * Interactive course demos. They are full pages of their own (not content
- * entries), so the Projects page lists them from here.
+ * entries), so the Side Projects page lists them from here.
  */
 export const demos = [
   {
